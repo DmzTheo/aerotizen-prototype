@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AeroTizen prototype</title>
+    <meta
+      name="description"
+      content="Playable prototype of AeroTizen's real screens with proposed themes, Home layouts and backgrounds."
+    />
+    <link rel="stylesheet" href="css/shell.css" />
+  </head>
+  <body>
+    <main class="stage" id="stage">
+      <iframe
+        class="tv"
+        id="tv"
+        title="AeroTizen TV screen, 1920 by 1080. Click it, then use the arrow keys, Enter, and Escape or Backspace for Back."
+        tabindex="0"
+      ></iframe>
+    </main>
+
+    <button
+      type="button"
+      class="panel-toggle"
+      id="panel-toggle"
+      aria-controls="panel"
+      aria-expanded="false"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+      <span class="sr-only" id="panel-toggle-label">Prototype settings</span>
+    </button>
+
+    <aside class="panel" id="panel" aria-labelledby="panel-title" hidden>
+      <div class="panel-body" id="panel-body"></div>
+      <footer class="panel-foot" id="panel-foot"></footer>
+    </aside>
+
+    <script src="js/shell.js"></script>
+  </body>
+</html>

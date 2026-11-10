@@ -1,0 +1,245 @@
+/* Theme proposal: the Diptych Home layout. Two columns at the bottom of the height
+   left under the header: text (x 64–600) then pictures (from x 640 to the screen edge). Top row: the caption and what
+   to resume (640x360 pictures); bottom row: the inputs and the apps. */
+.layout {
+  display: grid;
+  grid-template-columns: 536px minmax(0, 1fr);
+  grid-template-rows: 1fr auto auto;
+  column-gap: 40px;
+  row-gap: 48px;
+  height: 100%;
+  /* Clear of the bottom fade, with room for the focused card to grow without scrolling the page. */
+  padding-bottom: calc(var(--home-bottom-fade) + 24px);
+}
+
+/* The text column and the picture column lay their blocks on the layout's rows: the caption lines up with what to
+   resume, the inputs with the apps. */
+.text,
+.pictures {
+  display: contents;
+}
+
+/* ---------- A custom clock comes down into the text column ---------- */
+/* Over the caption and the inputs, it would make the rows taller than the screen: each column then stacks its blocks
+   on its own, at the bottom, and the clock keeps the top of the text column. */
+.layout[data-clock="page"] {
+  grid-template-rows: 1fr;
+}
+
+.layout[data-clock="page"] .text,
+.layout[data-clock="page"] .pictures {
+  display: flex;
+  flex-direction: column;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.layout[data-clock="page"] .text {
+  grid-column: 1;
+}
+
+.layout[data-clock="page"] .pictures {
+  grid-column: 2;
+}
+
+.layout[data-clock="page"] .text > *,
+.layout[data-clock="page"] .pictures > * {
+  align-self: stretch;
+}
+
+/* Down to the bottom while they fit; past that they overflow downward (flex-end would push them up, out of reach). */
+.layout[data-clock="page"] .clock {
+  margin-bottom: auto;
+}
+
+.layout[data-clock="page"] .pictures > :first-child {
+  margin-top: auto;
+}
+
+/* The row gap, as margins: Chromium 69 lacks the flex gap. */
+.layout[data-clock="page"] .text > * + *,
+.layout[data-clock="page"] .pictures > * + * {
+  margin-top: 48px;
+}
+
+/* ---------- Caption: what is in focus (FocusCaption), against the bottom of the top row ---------- */
+.caption {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+}
+
+/* ---------- Pictures: what to resume, without labels (the caption names it), then the apps ---------- */
+.programmes {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  min-width: 0;
+}
+
+.apps {
+  grid-column: 2;
+  grid-row: 3;
+  align-self: end;
+  min-width: 0;
+}
+
+/* Both rows start at the column and run off the screen edge. Their window opens 40px earlier and fades in over that
+   gap, so the focused card's glow (and a card scrolled past) fades out instead of being cut along a line. */
+.programmes > [data-horizontal-scroller][data-enabled="true"],
+.apps > [data-horizontal-scroller][data-enabled="true"] {
+  margin-left: -40px;
+  padding-left: 40px;
+  mask-image: linear-gradient(90deg, transparent 0, #000 40px);
+}
+
+[dir="rtl"] .programmes > [data-horizontal-scroller][data-enabled="true"],
+[dir="rtl"] .apps > [data-horizontal-scroller][data-enabled="true"] {
+  margin-right: -40px;
+  margin-left: calc(-1 * var(--home-side-padding));
+  padding-right: 40px;
+  padding-left: var(--home-side-padding);
+  mask-image: linear-gradient(270deg, transparent 0, #000 40px);
+}
+
+.programmes .programmeTrack[data-enabled="true"] {
+  gap: 28px;
+
+  > [data-key] {
+    flex: none;
+    width: 640px;
+    max-width: none;
+    height: 360px;
+  }
+
+  [data-continue-part="artwork"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+  }
+
+  [data-continue-part="image"] {
+    object-fit: cover;
+  }
+
+  [data-continue-part="label"] {
+    display: none;
+  }
+
+  /* Inside the picture: inset and rounded, below a theme's play mark, on a track light in every theme. A programme
+     not started shows none: its empty bar takes the hidden label's colour. */
+  [data-continue-part="progress"] {
+    position: absolute;
+    right: 20px;
+    bottom: 8px;
+    left: 20px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: var(--picture-progress-track);
+
+    &[data-empty="true"] {
+      visibility: hidden;
+    }
+  }
+
+  /* The theme's accent, unless it would vanish on a picture (Frost's is dark) */
+  [data-continue-part="progress-fill"] {
+    background: var(--picture-progress-fill, var(--focus));
+  }
+}
+
+/* ---------- Inputs: 2x2 under the caption (2x3, name only, with five or six) ---------- */
+.inputs {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: end;
+}
+
+.inputGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 80px;
+  gap: 16px 24px;
+
+  &[data-many="true"] {
+    grid-auto-rows: 60px;
+    gap: 12px 24px;
+  }
+}
+
+.layout .inputGrid > [data-input-card] {
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  height: 100%;
+  padding: 0 18px;
+  text-align: start;
+}
+
+.layout .inputGrid [data-input-card] [data-input-part="icon"] {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+
+  > svg {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.layout .inputGrid [data-input-card] [data-input-part="label"] {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  /* The icon (40px) and the gap (10px) keep their place beside the longest name. */
+  max-width: calc(100% - 50px);
+  font-size: 20px;
+}
+
+/* The state pill follows the name on its line instead of lying over it; when the line is short, the state gives way
+   with an ellipsis, never the name. */
+.layout .inputGrid [data-input-card] [data-input-part="status"] {
+  position: static;
+  order: 1;
+  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.layout .inputGrid [data-input-card] [data-input-part="status"]::before {
+  margin-right: 5px;
+  vertical-align: 1px;
+}
+
+[dir="rtl"] .layout .inputGrid [data-input-card] [data-input-part="status"] {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+[dir="rtl"] .layout .inputGrid [data-input-card] [data-input-part="status"]::before {
+  margin-right: 0;
+  margin-left: 5px;
+}
+
+/* Live TV's pill only repeats "TV": its name gets the whole line. */
+.layout .inputGrid [data-input-card][data-status="live"] [data-input-part="status"] {
+  display: none;
+}
+
+.layout .inputGrid[data-many="true"] [data-input-card] [data-input-part="status"],
+.layout .inputGrid[data-many="true"] [data-input-card] [data-input-part="subtitle"] {
+  display: none;
+}

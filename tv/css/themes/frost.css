@@ -1,0 +1,206 @@
+/* Frost: a light theme for bright rooms, translucent white panels over a soft pastel wallpaper (Pastel) and dark
+   text. Theme proposal: the Glass interface plus this file of variables, applied through
+   body[data-theme]. Sizes and spacing stay those of 2.7.0. */
+
+/* The theme's miniature in Settings → Appearance → Themes ([data-theme-preview]) takes the same variables. */
+body.glass-ui[data-theme="frost"],
+[data-theme-preview="frost"] {
+  /* Type: Jost (Latin, Cyrillic), Tajawal (Arabic); SamsungOne as fallback */
+  --font-ui: "Jost", "Tajawal", SamsungOne, Arial, sans-serif;
+  --font-display: var(--font-ui);
+  --app-label-weight: 500;
+  --home-section-heading-weight: 500;
+  --header-tab-weight: 500;
+  --clock-date-weight: 300;
+  --clock-time-weight: 500;
+
+  /* Palette: dark text on light glass */
+  --bg: #f1eef4;
+  --fg: #1d1f26;
+  --muted: #5f6474;
+  --card: rgba(255, 255, 255, 0.6);
+  --focus: #2a2f3a;
+  --focus-glow: rgba(30, 40, 60, 0.2);
+  --update-notice: #d39a12;
+
+  /* Header */
+  --header-tab-surface: rgba(255, 255, 255, 0.42);
+  --header-tab-border: rgba(255, 255, 255, 0.9);
+  --header-tab-shadow: inset 0 1px rgba(255, 255, 255, 0.95), 0 12px 30px rgba(60, 50, 90, 0.1);
+  --header-tab-text: #4f5566;
+  --header-focus-surface: rgba(255, 255, 255, 0.85);
+  --header-focus-shadow: 0 6px 16px rgba(60, 50, 90, 0.12);
+  --header-tab-radius: 38px;
+  --header-tab-plate-radius: 30px;
+  --header-tab-plate-surface: #fff;
+  --header-tab-plate-shadow: 0 6px 16px rgba(60, 50, 90, 0.16);
+  --header-tab-plate-text: #16181e;
+
+  /* App tiles */
+  --home-card-radius: 24px;
+  --home-card-shadow: 0 2px 4px rgba(60, 50, 90, 0.06), 0 16px 32px rgba(60, 50, 90, 0.16);
+
+  /* A dark gap (the text tone) like the real Glass ring keeps the white ring readable on white tiles and light walls
+     (the Themes miniature draws the same gap and ring, small) */
+  --home-card-focus-gap: var(--fg);
+  --home-card-focus-ring: #fff;
+  --home-card-focus-shadow:
+    0 0 0 4px var(--home-card-focus-gap), 0 0 0 10px var(--home-card-focus-ring), 0 0 0 11px rgba(20, 30, 50, 0.16),
+    0 34px 60px rgba(60, 50, 90, 0.32);
+  --home-card-focus-transform: translate3d(0, -8px, 0) scale(1.04);
+
+  /* Continue Watching (no SVG noise grain on cards and dock: it doubled their paint and raster) */
+  --continue-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.5));
+  --continue-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.85), 0 16px 36px rgba(60, 50, 90, 0.14);
+  --continue-label-surface: rgba(255, 255, 255, 0.35);
+  --continue-episode-text: var(--muted);
+  --continue-progress-track: rgba(30, 40, 70, 0.1);
+  /* On a picture (the Diptych), the dark accent would vanish: the progress fills white there */
+  --picture-progress-fill: #fff;
+  /* Buttons on its dark accent take white text: the caption on the wallpaper keeps the accent, the Billboard over a
+     picture turns white with graphite text */
+  --caption-button-text: #fff;
+  --billboard-button-surface: #fff;
+  --billboard-button-text: var(--fg);
+  --continue-card-radius: 22px;
+  --continue-artwork-surface: #e2e3ea;
+  --continue-title-text: var(--fg);
+  --continue-title-weight: 500;
+  /* The tiles' ring, without the gap */
+  --continue-focus-shadow:
+    0 0 0 6px var(--home-card-focus-ring), 0 0 0 7px rgba(20, 30, 50, 0.16), 0 30px 56px rgba(60, 50, 90, 0.3);
+  --continue-badge-radius: 12px;
+
+  /* Inputs */
+  --input-dock-surface: linear-gradient(165deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.4));
+  --input-dock-border: rgba(255, 255, 255, 0.95);
+  --input-dock-radius: 40px;
+  --input-dock-shadow: inset 0 1px #fff, 0 16px 36px rgba(60, 50, 90, 0.12);
+  --input-dock-shine: none;
+  --input-card-radius: 30px;
+  --input-card-border: rgba(255, 255, 255, 0.85);
+  --input-card-surface: rgba(255, 255, 255, 0.4);
+  --input-card-shadow: 0 4px 12px rgba(60, 50, 90, 0.06);
+  --input-text: var(--fg);
+  --input-label-shadow: none;
+  --input-subtitle-text: #535868;
+  --input-icon-text: #2b2f38;
+  --input-empty-opacity: 0.45;
+  /* A disconnected input in focus sits on the white focus card, like the others. */
+  --input-empty-focus-subtitle-text: var(--input-focus-subtitle-text);
+  --input-connected-border: rgba(16, 150, 118, 0.38);
+  --input-connected-surface: rgba(255, 255, 255, 0.55);
+  --input-connected-shadow: none;
+  --input-connected-text: var(--input-text);
+  --input-connected-subtitle-text: var(--input-subtitle-text);
+  --input-connected-icon-text: var(--input-icon-text);
+  --input-recognized-border: rgba(200, 140, 30, 0.35);
+  --input-recognized-surface: rgba(255, 255, 255, 0.55);
+  --input-focus-border: #fff;
+  --input-focus-surface: rgba(255, 255, 255, 0.92);
+  --input-focus-shadow: 0 0 0 1px rgba(20, 30, 50, 0.14), 0 14px 30px rgba(60, 50, 90, 0.2);
+  --input-focus-text: #16181e;
+  --input-focus-subtitle-text: #4f5566;
+  --input-focus-icon-text: #16181e;
+  --input-status-text: #3d4350;
+  --input-status-border: rgba(30, 40, 70, 0.12);
+  --input-status-surface: rgba(255, 255, 255, 0.7);
+  --input-connected-status-text: #0a6852;
+  --input-connected-status-border: rgba(16, 150, 118, 0.3);
+  --input-connected-status-surface: rgba(16, 150, 118, 0.1);
+  --input-recognized-status-text: #805808;
+  --input-recognized-status-border: rgba(200, 140, 30, 0.3);
+  --input-recognized-status-surface: rgba(230, 170, 60, 0.14);
+  --input-live-status-text: #3a5a9a;
+  --input-pinned-status-text: #3a5a9a;
+  --input-focus-status-border: rgba(30, 40, 70, 0.25);
+  --input-focus-status-surface: #f3f2f6;
+
+  /* All apps */
+  --back-to-top-surface: rgba(255, 255, 255, 0.78);
+  --back-to-top-border: rgba(30, 40, 70, 0.22);
+
+  /* Settings drawer: light drawer, dark text, dark selection */
+  --settings-overlay: rgba(244, 240, 248, 0.25);
+  --settings-surface: rgba(248, 247, 251, 0.95);
+  --settings-main-surface: rgba(255, 255, 255, 0.45);
+  --settings-border: rgba(255, 255, 255, 0.95);
+  --settings-radius: 28px;
+  --settings-shadow: inset 0 1px #fff, 0 30px 70px rgba(60, 50, 90, 0.2);
+  --settings-text: var(--fg);
+  --settings-muted: var(--muted);
+  --settings-kicker: var(--muted);
+  --settings-subtitle: #646979;
+  --settings-category-text: #2a2e37;
+  --settings-divider: rgba(30, 40, 70, 0.08);
+  --settings-heading-divider: rgba(30, 40, 70, 0.1);
+  --settings-close-surface: rgba(30, 40, 70, 0.06);
+  --settings-focused-surface: rgba(30, 40, 70, 0.08);
+  --settings-sidebar-focus-surface: rgba(255, 255, 255, 0.85);
+  --settings-sidebar-focus-shadow: 0 6px 16px rgba(60, 50, 90, 0.1);
+  --settings-content-focus-surface: rgba(30, 40, 70, 0.03);
+  --settings-focus-border: var(--fg);
+  --settings-content-focus-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 0 0 5px var(--fg);
+  --settings-scroll-ring-room: 2px; /* room for the 5px focus ring at the edge */
+  --settings-sidebar-line-height: 1.2; /* the font's own line metrics would grow the menu */
+  --surface-control: rgba(255, 255, 255, 0.55);
+  --border-control: rgba(30, 40, 70, 0.1);
+  --choice-selected-surface: var(--fg);
+  --choice-selected-border: var(--fg);
+  --choice-focused-surface: rgba(255, 255, 255, 0.9);
+  --selection-surface: var(--fg);
+  --control-focused-text: #16181e;
+  --control-text: var(--fg);
+  --choice-selected-text: #fff;
+  --selection-text: #fff;
+  --settings-slider-surface: rgba(255, 255, 255, 0.55);
+  --settings-slider-track: rgba(30, 40, 70, 0.12);
+
+  /* App actions menu and toast */
+  --menu-focus-surface: rgba(255, 255, 255, 0.85);
+  --menu-option-text: #2a2e37;
+  --menu-text: #16181e;
+  --toast-surface: rgba(248, 247, 251, 0.96);
+  --toast-text: var(--fg);
+  --toast-radius: 28px;
+  --toast-shadow: inset 0 0 0 1px #fff, 0 18px 40px rgba(60, 50, 90, 0.22);
+
+  /* Every proposal theme: moving a card keeps its focus look; sideways rows leave room for the focus glow */
+  --home-card-move-shadow: var(--home-card-focus-shadow);
+  --home-row-clearance: 96px;
+
+  /* Frost only: settings controls drawn for a light drawer */
+  --input-underline: rgba(30, 40, 70, 0.25);
+  --input-placeholder: #80859a;
+  --settings-store-surface: rgba(255, 255, 255, 0.6);
+  --settings-store-shadow: inset 0 0 0 2px rgba(30, 40, 70, 0.12);
+  --settings-store-label-shadow: none;
+  --settings-slider-adjusting-shadow: 0 0 0 4px #fff, 0 0 0 8px var(--focus);
+}
+
+/* Painted on the wallpaper: dark over a light wallpaper (2.7.0 measures it), the real light text otherwise (the
+   miniature in Settings follows its own wallpaper, data-light) */
+:root[data-light-background="true"] body.glass-ui[data-theme="frost"],
+[data-theme-preview="frost"][data-light="true"] {
+  --network-offline: #c62828;
+  --header-icon-text: #2b2f38;
+  --home-section-heading-text: rgba(30, 32, 40, 0.74);
+  --home-section-heading-shadow: none;
+  --weather-icon-contrast: initial;
+  --weather-icon-sun: #9a6a09;
+  --weather-icon-cloud: #6a7487;
+  --weather-icon-rain: #2f74c0;
+  --weather-icon-snow: #6a7487;
+  /* Disconnected inputs have no card: their text is painted on the wallpaper too. */
+  --input-empty-text: var(--input-text);
+  --input-empty-subtitle-text: var(--input-subtitle-text);
+}
+
+:root:not([data-light-background="true"]) body.glass-ui[data-theme="frost"] [data-header-shortcuts],
+:root:not([data-light-background="true"]) body.glass-ui[data-theme="frost"] [data-header-status] {
+  --fg: #fff;
+  --muted: #b8b8c0;
+  --focus: #edf2ff;
+  --header-focus-surface: rgba(236, 242, 255, 0.16);
+  --header-focus-shadow: inset 0 1px rgba(255, 255, 255, 0.2);
+}

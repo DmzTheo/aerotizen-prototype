@@ -1,0 +1,57 @@
+.indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  pointer-events: none;
+  border: 2px solid var(--focus);
+  background: var(--header-focus-surface);
+  box-shadow: var(--header-focus-shadow);
+  transition:
+    transform var(--motion-duration-header-focus) cubic-bezier(0.2, 0.72, 0.25, 1),
+    opacity var(--motion-duration-focus) ease-out;
+
+  &[data-motion="false"] {
+    transition: none;
+  }
+}
+
+.shortcuts {
+  opacity: 0;
+  border-radius: 50%;
+
+  &[data-visible="true"] {
+    opacity: 1;
+  }
+}
+
+.tabs {
+  border-color: transparent;
+  border-radius: calc(var(--header-tab-plate-radius, 20px) - 1px);
+  /* Theme proposal: the tab plate can differ from the shortcut focus and carry an underline that slides with it. */
+  background: var(--header-tab-plate-surface, var(--header-focus-surface));
+  box-shadow: var(--header-tab-plate-shadow, var(--header-focus-shadow));
+
+  &[data-focused="true"] {
+    border-color: var(--header-tab-plate-border, var(--focus));
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 30%;
+    right: 30%;
+    bottom: 4px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--header-tab-underline, none);
+    box-shadow: var(--header-tab-underline-shadow, none);
+    transform-origin: 50% 100%;
+    transition: transform var(--motion-duration-header-focus) ease-out;
+  }
+
+  /* Focused: 76% wide and 5px tall. */
+  &[data-focused="true"]::after {
+    transform: scale(1.9, 1.25);
+  }
+}

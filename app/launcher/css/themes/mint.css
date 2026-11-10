@@ -1,0 +1,179 @@
+/* Mint: charcoal and mint, a thick mint focus outline, a white label on the focused card and round play buttons on
+   Continue Watching. Theme proposal: the Glass interface plus this file of variables,
+   applied through body[data-theme]. Sizes and spacing stay those of 2.7.0. */
+
+/* The theme's miniature in Settings → Appearance → Themes ([data-theme-preview]) takes the same variables. */
+body.glass-ui[data-theme="mint"],
+[data-theme-preview="mint"] {
+  /* Type: Noto Sans KR (Latin, Cyrillic), Alexandria (Arabic); SamsungOne as fallback */
+  --font-ui: "Noto Sans KR", "Alexandria", SamsungOne, Arial, sans-serif;
+  --font-display: var(--font-ui);
+  --app-label-weight: 500;
+  --home-section-heading-weight: 700;
+  --header-tab-weight: 700;
+  --clock-date-weight: 400;
+  --clock-time-weight: 800;
+
+  /* Palette */
+  --bg: #0c0d10;
+  --fg: #f4f6f7;
+  --muted: rgba(230, 235, 238, 0.62);
+  /* The accent and the gradient end as their red, green and blue, so their transparent shades can refer to them */
+  --focus-rgb: 25, 227, 177;
+  --focus: rgb(var(--focus-rgb));
+  --focus-glow: rgba(var(--focus-rgb), 0.5);
+  --theme-end-rgb: 21, 201, 224;
+  --theme-gradient: linear-gradient(90deg, var(--focus), rgb(var(--theme-end-rgb)));
+
+  /* Header: mint icons, mint gradient pill under the current tab */
+  --header-tab-surface: rgba(30, 31, 34, 0.72);
+  --header-tab-border: rgba(255, 255, 255, 0.08);
+  --header-tab-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  --header-tab-text: rgba(240, 244, 246, 0.72);
+  --header-focus-surface: rgba(var(--focus-rgb), 0.16);
+  --header-focus-shadow: none;
+  --header-tab-radius: 38px;
+  --header-tab-plate-radius: 30px;
+  --header-tab-plate-surface: var(--theme-gradient);
+  --header-tab-plate-shadow: 0 8px 22px rgba(var(--focus-rgb), 0.35);
+  --header-tab-plate-text: #05211b;
+  --home-section-heading-tracking: 1.5px;
+
+  /* App tiles */
+  --home-card-radius: 14px;
+  --home-card-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+  --home-card-focus-shadow:
+    0 0 0 5px var(--focus), 0 0 30px 8px rgba(var(--focus-rgb), 0.45), 0 22px 40px rgba(0, 0, 0, 0.5);
+  --home-card-focus-transform: translateZ(0) scale(1.05);
+
+  /* First row, where the viewport clips above the cards: the glow sits lower */
+  --home-card-focus-shadow-top:
+    0 0 0 5px var(--focus), 0 21px 30px 8px rgba(var(--focus-rgb), 0.45), 0 22px 40px rgba(0, 0, 0, 0.5);
+
+  /* Continue Watching: solid charcoal, white label when focused, mint play buttons */
+  --continue-surface: #232529;
+  --continue-shadow: 0 12px 26px rgba(0, 0, 0, 0.45);
+  --continue-label-surface: #2a2c31;
+  --continue-episode-text: rgb(var(--theme-end-rgb));
+  --continue-progress-track: rgba(255, 255, 255, 0.12);
+  --continue-card-radius: 14px;
+  --continue-artwork-surface: #101014;
+  --continue-title-text: var(--fg);
+  --continue-title-weight: 500;
+  --continue-focus-shadow: 0 0 0 5px var(--focus), 0 0 30px 8px rgba(var(--focus-rgb), 0.45);
+  --continue-focus-shadow-top: 0 0 0 5px var(--focus), 0 20px 30px 8px rgba(var(--focus-rgb), 0.45);
+  --continue-focus-label-surface: #fff;
+  --continue-focus-title-text: #111316;
+  --continue-focus-episode-text: #087f6b;
+  --continue-badge-radius: 10px;
+  --continue-artwork-mark: var(--focus)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 6.5v11l9-5.5z' fill='white'/%3E%3C/svg%3E")
+    center / 28px no-repeat;
+  --continue-artwork-mark-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+
+  /* Inputs */
+  --input-dock-surface: rgba(30, 31, 34, 0.82);
+  --input-dock-border: rgba(255, 255, 255, 0.08);
+  --input-dock-radius: 22px;
+  --input-dock-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+  --input-dock-shine: none;
+  --input-card-radius: 14px;
+  --input-card-border: rgba(255, 255, 255, 0.06);
+  --input-card-surface: #26282c;
+  --input-card-shadow: none;
+  --input-text: var(--fg);
+  --input-label-shadow: none;
+  --input-subtitle-text: rgba(230, 235, 238, 0.6);
+  --input-icon-text: var(--focus);
+  --input-empty-opacity: 0.37;
+  --input-connected-border: rgba(var(--focus-rgb), 0.55);
+  --input-connected-surface: #26282c;
+  --input-connected-shadow: none;
+  --input-connected-text: var(--input-text);
+  --input-connected-subtitle-text: var(--input-subtitle-text);
+  --input-connected-icon-text: var(--input-icon-text);
+  --input-recognized-border: rgba(var(--theme-end-rgb), 0.45);
+  --input-recognized-surface: #26282c;
+  --input-focus-border: var(--focus);
+  --input-focus-surface: #2c2f33;
+  --input-focus-shadow: 0 0 26px 6px rgba(var(--focus-rgb), 0.35);
+  --input-focus-text: #fff;
+  --input-focus-subtitle-text: rgba(255, 255, 255, 0.8);
+  --input-focus-icon-text: var(--focus);
+  --input-status-text: rgba(255, 255, 255, 0.87);
+  --input-status-border: rgba(255, 255, 255, 0.2);
+  --input-status-surface: rgba(0, 0, 0, 0.25);
+  --input-connected-status-text: var(--focus);
+  --input-connected-status-border: rgba(var(--focus-rgb), 0.4);
+  --input-connected-status-surface: rgba(var(--focus-rgb), 0.1);
+  --input-recognized-status-text: rgb(var(--theme-end-rgb));
+  --input-recognized-status-border: rgba(var(--theme-end-rgb), 0.4);
+  --input-recognized-status-surface: rgba(var(--theme-end-rgb), 0.1);
+  --input-live-status-text: #dae7ff;
+  --input-pinned-status-text: #dce9ff;
+  --input-focus-status-border: rgba(var(--focus-rgb), 0.6);
+  --input-focus-status-surface: rgba(var(--focus-rgb), 0.16);
+
+  /* All apps */
+  --back-to-top-surface: #26282c;
+  --back-to-top-border: rgba(var(--focus-rgb), 0.55);
+
+  /* Settings drawer: charcoal, mint selection */
+  --settings-overlay: rgba(0, 0, 0, 0.45);
+  --settings-surface: #1d1e21;
+  --settings-main-surface: #17181b;
+  --settings-border: rgba(255, 255, 255, 0.07);
+  --settings-radius: 16px;
+  --settings-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  --settings-text: var(--fg);
+  --settings-muted: rgba(230, 235, 238, 0.6);
+  --settings-kicker: rgba(230, 235, 238, 0.6);
+  --settings-subtitle: rgba(220, 226, 230, 0.55);
+  --settings-category-text: rgba(244, 246, 247, 0.86);
+  --settings-divider: rgba(255, 255, 255, 0.07);
+  --settings-heading-divider: rgba(255, 255, 255, 0.08);
+  --settings-close-surface: rgba(255, 255, 255, 0.06);
+  --settings-sidebar-focus-surface: rgba(var(--focus-rgb), 0.12);
+  --settings-sidebar-focus-shadow: none;
+  --settings-content-focus-shadow: 0 0 0 3px #17181b, 0 0 0 5px var(--focus);
+  --settings-scroll-ring-room: 2px; /* room for the 5px focus ring at the edge */
+  --settings-sidebar-line-height: 1.2; /* the font's own line metrics would grow the menu */
+  --settings-return-label-wrap: nowrap; /* Alexandria is wide: Samsung Home in Arabic stays on one line */
+  --settings-focus-border: var(--focus);
+  --surface-control: #26282c;
+  --border-control: rgba(255, 255, 255, 0.07);
+  --choice-selected-surface: var(--theme-gradient);
+  --choice-selected-border: transparent;
+  --choice-focused-surface: #2f3236;
+  --selection-surface: var(--theme-gradient);
+  --control-focused-text: #fff;
+  --settings-category-icon: var(--focus);
+  --control-text: var(--fg);
+  --choice-selected-text: #05211b;
+  --selection-text: #05211b;
+  --settings-slider-surface: #26282c;
+  --settings-slider-track: rgba(255, 255, 255, 0.12);
+
+  /* App actions menu and toast */
+  --menu-focus-surface: rgba(var(--focus-rgb), 0.12);
+  --menu-option-text: rgba(244, 246, 247, 0.86);
+  --menu-text: #fff;
+  --toast-surface: #232529;
+  --toast-text: var(--fg);
+  --toast-radius: 14px;
+  --toast-shadow: inset 0 0 0 1px rgba(var(--focus-rgb), 0.35), 0 18px 40px rgba(0, 0, 0, 0.5);
+
+  /* Every proposal theme: moving a card keeps its focus look; sideways rows leave room for the focus glow */
+  --home-card-move-shadow: var(--home-card-focus-shadow);
+  --home-row-clearance: 96px;
+}
+
+/* Painted on the wallpaper: over a light wallpaper, 2.7.0 turns this text dark and the theme steps aside (the
+   miniature in Settings follows its own wallpaper, data-light) */
+:root:not([data-light-background="true"]) body.glass-ui[data-theme="mint"],
+[data-theme-preview="mint"]:not([data-light="true"]) {
+  --header-icon-text: var(--focus);
+  --home-section-heading-text: #fff;
+  --home-section-heading-shadow: none;
+  --header-status-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}

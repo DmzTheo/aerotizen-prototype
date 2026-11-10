@@ -1,0 +1,185 @@
+/* Pop: opaque white cards with a pink accent, very round corners and a white drawer with dark text. Theme proposal:
+   the Glass interface plus this file of variables, applied through body[data-theme].
+   Sizes and spacing stay those of 2.7.0. */
+
+/* The theme's miniature in Settings → Appearance → Themes ([data-theme-preview]) takes the same variables. */
+body.glass-ui[data-theme="pop"],
+[data-theme-preview="pop"] {
+  /* Type: Nunito (Latin, Cyrillic), Baloo Bhaijaan 2 (Arabic); SamsungOne as fallback */
+  --font-ui: "Nunito", "Baloo Bhaijaan 2", SamsungOne, Arial, sans-serif;
+  --font-display: var(--font-ui);
+  --app-label-weight: 600;
+  --home-section-heading-weight: 700;
+  --header-tab-weight: 600;
+  --clock-date-weight: 500;
+  --clock-time-weight: 700;
+
+  /* Palette (pink text on white is darkened to #e0115f for contrast; #ff2d78 stays the accent) */
+  --bg: #3a0d2a;
+  --fg: #fff;
+  --muted: rgba(255, 230, 240, 0.75);
+  /* The accent as its red, green and blue, so its transparent shades can refer to it */
+  --focus-rgb: 255, 45, 120;
+  --focus: rgb(var(--focus-rgb));
+  --focus-glow: rgba(var(--focus-rgb), 0.55);
+  --theme-pink-text: #e0115f;
+
+  /* Header */
+  --header-tab-surface: rgba(255, 255, 255, 0.16);
+  --header-tab-border: rgba(255, 255, 255, 0.3);
+  --header-tab-shadow: inset 0 1px rgba(255, 255, 255, 0.28), 0 14px 30px rgba(0, 0, 0, 0.2);
+  --header-tab-text: rgba(255, 255, 255, 0.9);
+  --header-focus-surface: rgba(255, 255, 255, 0.24);
+  --header-focus-shadow: none;
+  --header-tab-radius: 38px;
+  --header-tab-plate-radius: 30px;
+  --header-tab-plate-surface: #fff;
+  --header-tab-plate-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+  --header-tab-plate-text: #2a0a1d;
+
+  /* App tiles */
+  --home-card-radius: 48px;
+  --home-card-shadow: 0 20px 36px rgba(0, 0, 0, 0.32);
+  /* A white gap inside the ring in the focus colour (the Themes miniature draws the same gap and ring, small) */
+  --home-card-focus-gap: #fff;
+  --home-card-focus-shadow:
+    0 0 0 6px var(--home-card-focus-gap), 0 0 0 12px var(--focus), 0 0 54px 12px var(--focus-glow),
+    0 30px 50px rgba(0, 0, 0, 0.4);
+  --home-card-focus-transform: translate3d(0, -6px, 0) scale(1.045);
+
+  /* First row, where the viewport clips above the cards: the glow sits lower */
+  --home-card-focus-shadow-top:
+    0 0 0 6px var(--home-card-focus-gap), 0 0 0 12px var(--focus), 0 48px 54px 12px var(--focus-glow),
+    0 30px 50px rgba(0, 0, 0, 0.4);
+
+  /* Continue Watching: white cards */
+  --continue-surface: #fff;
+  --continue-shadow: 0 20px 40px rgba(0, 0, 0, 0.28);
+  --continue-label-surface: #fff;
+  --continue-episode-text: var(--theme-pink-text);
+  --continue-progress-track: #f3e4ec;
+  --continue-card-radius: 36px;
+  --continue-artwork-surface: #eadfe6;
+  --continue-title-text: #121016;
+  --continue-title-weight: 700;
+  /* The tiles' gap and ring */
+  --continue-focus-shadow:
+    0 0 0 6px var(--home-card-focus-gap), 0 0 0 12px var(--focus), 0 0 48px 10px var(--focus-glow);
+  --continue-focus-shadow-top:
+    0 0 0 6px var(--home-card-focus-gap), 0 0 0 12px var(--focus), 0 40px 48px 10px var(--focus-glow);
+  --continue-badge-radius: 16px;
+
+  /* Inputs: a translucent pill dock; the cards of connected inputs turn white */
+  --input-dock-surface: rgba(255, 255, 255, 0.14);
+  --input-dock-border: rgba(255, 255, 255, 0.28);
+  --input-dock-radius: 70px;
+  --input-dock-shadow: inset 0 1px rgba(255, 255, 255, 0.25), 0 16px 36px rgba(0, 0, 0, 0.25);
+  --input-dock-shine: none;
+  --input-card-radius: 42px;
+  --input-card-border: rgba(255, 255, 255, 0.2);
+  --input-card-surface: rgba(255, 255, 255, 0.1);
+  --input-card-shadow: none;
+  --input-text: #fff;
+  --input-label-shadow: 0 1px 6px rgba(0, 0, 0, 0.33);
+  --input-subtitle-text: rgba(255, 240, 246, 0.8);
+  --input-icon-text: #fff;
+  --input-empty-opacity: 0.37;
+  --input-connected-border: #fff;
+  --input-connected-surface: #fff;
+  --input-connected-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+  --input-connected-text: #1a1220;
+  --input-connected-subtitle-text: #342b39;
+  --input-connected-icon-text: #1a1220;
+  --input-recognized-border: #fff;
+  --input-recognized-surface: #fff;
+  --input-focus-border: var(--focus);
+  --input-focus-surface: #fff;
+  --input-focus-shadow: 0 0 34px 8px var(--focus-glow);
+  --input-focus-text: #1a1220;
+  --input-focus-subtitle-text: #342b39;
+  --input-focus-icon-text: #1a1220;
+  --input-status-text: rgba(255, 255, 255, 0.87);
+  --input-status-border: rgba(255, 255, 255, 0.2);
+  --input-status-surface: rgba(0, 0, 0, 0.25);
+  --input-connected-status-text: #087c53;
+  --input-connected-status-border: rgba(12, 154, 104, 0.3);
+  --input-connected-status-surface: rgba(12, 154, 104, 0.1);
+  --input-recognized-status-text: #9a5d08;
+  --input-recognized-status-border: rgba(200, 130, 20, 0.3);
+  --input-recognized-status-surface: rgba(240, 170, 40, 0.14);
+  --input-live-status-text: #dae7ff;
+  --input-pinned-status-text: #dce9ff;
+  --input-focus-status-border: rgba(var(--focus-rgb), 0.4);
+  --input-focus-status-surface: rgba(var(--focus-rgb), 0.1);
+
+  /* All apps */
+  --back-to-top-surface: rgba(255, 255, 255, 0.18);
+  --back-to-top-border: rgba(255, 255, 255, 0.6);
+
+  /* Settings drawer: white drawer, dark text, pink selection */
+  --settings-overlay: rgba(40, 0, 20, 0.25);
+  --settings-surface: #fff;
+  --settings-main-surface: #fbf6f9;
+  --settings-border: rgba(255, 255, 255, 0.9);
+  --settings-radius: 36px;
+  --settings-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+  --settings-text: #1a1220;
+  --settings-muted: #75697a;
+  --settings-kicker: #75697a;
+  --settings-subtitle: #75697a;
+  --settings-category-text: #2a1e2e;
+  --settings-divider: rgba(42, 10, 29, 0.08);
+  --settings-heading-divider: rgba(42, 10, 29, 0.1);
+  --settings-close-surface: rgba(42, 10, 29, 0.06);
+  --settings-focused-surface: #fde7f0;
+  --settings-sidebar-focus-surface: #fde7f0;
+  --settings-sidebar-focus-shadow: none;
+  --settings-content-focus-surface: rgba(var(--focus-rgb), 0.04);
+  --settings-focus-border: var(--focus);
+  --settings-content-focus-shadow: 0 0 0 3px #fbf6f9, 0 0 0 5px var(--focus);
+  --settings-scroll-ring-room: 2px; /* room for the 5px focus ring at the edge */
+  --settings-sidebar-line-height: 1.2; /* the font's own line metrics would grow the menu */
+  --surface-control: #f5edf1;
+  --border-control: rgba(42, 10, 29, 0.1);
+  --choice-selected-surface: var(--theme-pink-text);
+  --choice-selected-border: var(--theme-pink-text);
+  --choice-focused-surface: #fde7f0;
+  --selection-surface: var(--theme-pink-text);
+  --control-focused-text: #1a1220;
+  --settings-category-icon: var(--focus);
+  --control-text: #1a1220;
+  --choice-selected-text: #fff;
+  --selection-text: #fff;
+  --settings-slider-surface: #f5edf1;
+  --settings-slider-track: #ead9e2;
+
+  /* App actions menu and toast */
+  --menu-focus-surface: #fde7f0;
+  --menu-option-text: #2a1e2e;
+  --menu-text: #1a1220;
+  --toast-surface: #fff;
+  --toast-text: #1a1220;
+  --toast-radius: 36px;
+  --toast-shadow: 0 18px 40px rgba(0, 0, 0, 0.3);
+
+  /* Every proposal theme: moving a card keeps its focus look; sideways rows leave room for the focus glow */
+  --home-card-move-shadow: var(--home-card-focus-shadow);
+  --home-row-clearance: 96px;
+
+  /* Pop only: settings controls drawn for a light drawer */
+  --input-underline: rgba(42, 10, 29, 0.25);
+  --input-placeholder: #8a7d8f;
+  --settings-store-surface: #f5edf1;
+  --settings-store-shadow: inset 0 0 0 2px rgba(42, 10, 29, 0.1);
+  --settings-store-label-shadow: none;
+  --settings-store-subtitle-text: rgba(26, 18, 32, 0.65);
+  --settings-slider-adjusting-shadow: 0 0 0 4px #fff, 0 0 0 8px var(--focus);
+}
+
+/* Painted on the wallpaper: over a light wallpaper, 2.7.0 turns this text dark and the theme steps aside (the
+   miniature in Settings follows its own wallpaper, data-light) */
+:root:not([data-light-background="true"]) body.glass-ui[data-theme="pop"],
+[data-theme-preview="pop"]:not([data-light="true"]) {
+  --home-section-heading-text: rgba(255, 255, 255, 0.95);
+  --home-section-heading-shadow: 0 2px 9px rgba(0, 0, 0, 0.42);
+}

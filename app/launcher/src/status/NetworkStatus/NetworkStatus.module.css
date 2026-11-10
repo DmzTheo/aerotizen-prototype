@@ -1,0 +1,14 @@
+.icon {
+  display: block;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  padding: 12px;
+  border-radius: 50%;
+  color: var(--header-icon-text, var(--fg));
+  background: var(--header-icon-surface, transparent);
+  box-shadow: var(--header-icon-shadow, none);
+  &[data-net-kind="offline"] {
+    color: var(--network-offline);
+  }
+}

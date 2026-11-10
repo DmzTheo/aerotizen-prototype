@@ -1,0 +1,36 @@
+.store {
+  --settings-card-direction: column;
+  --settings-card-gap: 8px;
+  --settings-card-padding: 12px;
+  --settings-card-surface: var(--settings-store-surface);
+  --settings-card-shadow: var(--settings-store-shadow);
+}
+
+.icon {
+  width: 92px;
+  height: 76px;
+  /* Theme proposal: the icon gives way when the name and the store line wrap (French, Russian, a theme's wider font),
+     so the card still holds them; where they fit, it keeps 2.7.0's size. */
+  flex: 0 1 76px;
+  min-height: 0;
+}
+
+.label {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--control-text);
+  /* Theme proposal: a light theme drops the dark shadow and darkens the store line, which its light card would hide. */
+  text-shadow: var(--settings-store-label-shadow, var(--app-label-shadow));
+  max-width: 100%;
+  line-height: 21px;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--settings-store-subtitle-text, var(--muted));
+  font-weight: 400;
+  margin-top: 4px;
+  /* Theme proposal: its own line height (the name's 21px spread it out), which leaves the icon more room. */
+  line-height: 16px;
+}

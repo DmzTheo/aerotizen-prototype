@@ -1,0 +1,57 @@
+.card {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--app-card-size);
+  height: var(--app-card-size);
+  /* Theme proposal: smaller cards (the Billboard band) scale the radius with them. */
+  border-radius: calc(var(--home-card-radius, 10px) * var(--app-card-scale, 1));
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--home-app-gap, 22px);
+  background: var(--app-background, var(--card));
+  box-shadow: var(--home-card-shadow, none);
+  transform: translateZ(0);
+  transition: transform var(--motion-duration-focus) ease-out;
+
+  /* Theme proposal: an optional sheen over the artwork, clipped by the card's radius. */
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: inherit;
+    background: var(--home-card-sheen, none);
+    pointer-events: none;
+  }
+
+  &[data-focused="true"] {
+    transform: translateZ(0) var(--home-card-focus-transform, scale(1.035));
+    box-shadow: var(--home-card-focus-shadow);
+    z-index: 2;
+  }
+
+  &[data-moving="true"] {
+    overflow: visible;
+    box-shadow: var(--home-card-move-shadow);
+
+    &:not([data-focused="true"]) {
+      transform: translateZ(0) scale(1.06) translateY(-8px);
+      z-index: 3;
+    }
+  }
+}
+
+/* Theme proposal: the first row sits just under the header, where the viewport clips, so a theme can lower its
+   glow there. On the Scroll layout's row every card is in the first row; the proposed layouts keep their apps
+   lower. Flat selectors: nested under a list, they would compile to :is(), which Chromium 69 does not read. */
+[data-app-grid][data-layout="grid"][data-columns="6"] > .card:nth-child(-n + 6)[data-focused="true"],
+[data-app-grid][data-layout="grid"][data-columns="5"] > .card:nth-child(-n + 5)[data-focused="true"],
+[data-app-grid][data-layout="grid"][data-columns="4"] > .card:nth-child(-n + 4)[data-focused="true"],
+[data-app-grid][data-layout="grid"][data-columns="3"] > .card:nth-child(-n + 3)[data-focused="true"],
+[data-app-grid][data-layout="scroll"] > .card[data-focused="true"] {
+  box-shadow: var(--home-card-focus-shadow-top, var(--home-card-focus-shadow));
+}

@@ -1,0 +1,86 @@
+/* Theme proposal: the programmes of the Quay and Moment layouts, 400x225 pictures with
+   their title over them, 28px apart, two at a time: the window holds 828px. */
+.shelf {
+  min-width: 0;
+  max-width: 828px;
+}
+
+/* Room around the window for the focused card's ring and glow */
+.shelf > [data-horizontal-scroller][data-enabled="true"] {
+  margin: -32px -24px;
+  padding: 32px 24px;
+}
+
+.track[data-enabled="true"] {
+  gap: 28px;
+
+  > [data-key] {
+    flex: none;
+    width: 400px;
+    max-width: none;
+    height: 225px;
+  }
+
+  [data-continue-part="artwork"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+
+    /* A theme's play mark (Mint) goes to the top corner, where it leaves the title alone */
+    &::after {
+      top: 16px;
+      bottom: auto;
+    }
+  }
+
+  [data-continue-part="image"] {
+    object-fit: cover;
+  }
+
+  [data-continue-part="label"] {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+    left: 0;
+    height: auto;
+    padding: 40px 18px 14px;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+    color: var(--picture-text);
+  }
+
+  [data-continue-part="title"] {
+    display: block;
+    overflow: hidden;
+    color: var(--picture-text);
+    font-size: 24px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  [data-continue-part="episode"] {
+    color: var(--picture-subtitle-text);
+  }
+
+  /* Inside the picture under the title, on a track light in every theme; a programme not started shows none. */
+  [data-continue-part="progress"] {
+    position: absolute;
+    right: 18px;
+    bottom: 8px;
+    left: 18px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: var(--picture-progress-track);
+
+    &[data-empty="true"] {
+      visibility: hidden;
+    }
+  }
+
+  [data-continue-part="progress-fill"] {
+    background: var(--picture-progress-fill, var(--focus));
+  }
+}

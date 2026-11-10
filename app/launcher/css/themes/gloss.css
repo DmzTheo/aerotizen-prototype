@@ -1,0 +1,207 @@
+/* Gloss: glossy tiles rounded like app icons, a coral to blue gradient, inputs as separate pills and thin dividers
+   in the status bar. Theme proposal: the Glass interface plus this file of variables,
+   applied through body[data-theme]. Sizes and spacing stay those of 2.7.0. */
+
+/* The theme's miniature in Settings → Appearance → Themes ([data-theme-preview]) takes the same variables. */
+body.glass-ui[data-theme="gloss"],
+[data-theme-preview="gloss"] {
+  /* Type: Google Sans (Latin, Cyrillic, Arabic); SamsungOne as fallback */
+  --font-ui: "Google Sans", SamsungOne, Arial, sans-serif;
+  --font-display: var(--font-ui);
+  --app-label-weight: 600;
+  --home-section-heading-weight: 600;
+  --header-tab-weight: 600;
+  --clock-date-weight: 400;
+  --clock-time-weight: 600;
+
+  /* Palette */
+  --bg: #120816;
+  --fg: #fff7f3;
+  --muted: rgba(255, 226, 214, 0.72);
+  /* The accent and the gradient ends as their red, green and blue, so their transparent shades can refer to them */
+  --focus-rgb: 255, 122, 89;
+  --focus: rgb(var(--focus-rgb));
+  --focus-glow: rgba(var(--focus-rgb), 0.5);
+  --theme-start-rgb: 255, 106, 77;
+  --theme-middle: #c63bb0;
+  --theme-end-rgb: 74, 91, 255;
+  --theme-gradient: linear-gradient(
+    120deg,
+    rgb(var(--theme-start-rgb)) 0%,
+    var(--theme-middle) 52%,
+    rgb(var(--theme-end-rgb)) 100%
+  );
+
+  /* Header */
+  --header-tab-surface: rgba(22, 8, 26, 0.42);
+  --header-tab-border: rgba(255, 255, 255, 0.16);
+  --header-tab-shadow: inset 0 1px rgba(255, 255, 255, 0.12), 0 14px 30px rgba(0, 0, 0, 0.25);
+  --header-tab-text: rgba(255, 240, 234, 0.8);
+  --header-focus-surface: rgba(255, 255, 255, 0.18);
+  --header-focus-shadow: none;
+  --header-tab-radius: 24px;
+  --header-tab-plate-radius: 17px;
+
+  /* The theme gradient, deepened so the white label of the current tab keeps ≥ 4.5:1 (4.8 at the coral end). */
+  --header-tab-plate-surface: linear-gradient(120deg, #cc4129 0%, #b0329f 52%, #4155f0 100%);
+  --header-tab-plate-shadow: inset 0 1px rgba(255, 255, 255, 0.35), 0 10px 22px rgba(120, 60, 255, 0.3);
+  --header-tab-plate-text: #fff;
+
+  /* App tiles */
+  --home-card-radius: 56px;
+  --home-card-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.25), 0 18px 32px rgba(0, 0, 0, 0.35);
+  --home-card-sheen:
+    radial-gradient(
+      130% 58% at 50% -10%,
+      rgba(255, 255, 255, 0.4),
+      rgba(255, 255, 255, 0.06) 55%,
+      rgba(255, 255, 255, 0) 64%
+    ),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.14) 100%);
+
+  /* A dark gap like the real Glass ring keeps the white ring readable on white tiles (the Themes miniature draws the
+     same gap and ring, small) */
+  --home-card-focus-gap: var(--bg);
+  --home-card-focus-ring: #fff;
+  --home-card-focus-shadow:
+    0 0 0 4px var(--home-card-focus-gap), 0 0 0 8px var(--home-card-focus-ring),
+    -18px 10px 44px 6px rgba(var(--theme-start-rgb), 0.55), 18px 10px 44px 6px rgba(var(--theme-end-rgb), 0.55),
+    0 30px 50px rgba(0, 0, 0, 0.4);
+  --home-card-focus-transform: translate3d(0, -8px, 0) scale(1.05);
+
+  /* First row, where the viewport clips above the cards: the glow sits lower */
+  --home-card-focus-shadow-top:
+    0 0 0 4px var(--home-card-focus-gap), 0 0 0 8px var(--home-card-focus-ring),
+    -18px 39px 44px 6px rgba(var(--theme-start-rgb), 0.55), 18px 39px 44px 6px rgba(var(--theme-end-rgb), 0.55),
+    0 30px 50px rgba(0, 0, 0, 0.4);
+
+  /* Continue Watching (plain surfaces: an SVG noise grain doubled the cards' paint and raster) */
+  --continue-surface: rgba(24, 8, 28, 0.5);
+  --continue-shadow: inset 0 1px rgba(255, 255, 255, 0.16), 0 18px 34px rgba(0, 0, 0, 0.35);
+  --continue-label-surface: rgba(18, 6, 22, 0.45);
+  --continue-episode-text: #ffc9b8;
+  --continue-progress-track: rgba(255, 220, 205, 0.22);
+  --continue-card-radius: 28px;
+  --continue-artwork-surface: #101014;
+  --continue-title-text: var(--fg);
+  --continue-title-weight: 600;
+  /* The tiles' ring, without the gap */
+  --continue-focus-shadow:
+    0 0 0 4px var(--home-card-focus-ring), -16px 8px 40px 4px rgba(var(--theme-start-rgb), 0.5),
+    16px 8px 40px 4px rgba(var(--theme-end-rgb), 0.5);
+  --continue-focus-shadow-top:
+    0 0 0 4px var(--home-card-focus-ring), -16px 32px 40px 4px rgba(var(--theme-start-rgb), 0.5),
+    16px 32px 40px 4px rgba(var(--theme-end-rgb), 0.5);
+  --continue-badge-radius: 16px;
+
+  /* Inputs: no dock surface, every card is its own pill */
+  --input-dock-surface: none;
+  --input-dock-border: transparent;
+  --input-dock-radius: 37px;
+  --input-dock-shadow: none;
+  --input-dock-shine: none;
+  /* With no dock, the Quay and Moment band takes the header tabs' glass. */
+  --home-band-surface: var(--header-tab-surface);
+  --home-band-border: var(--header-tab-border);
+  --input-card-radius: 24px;
+  --input-card-border: rgba(255, 255, 255, 0.14);
+  --input-card-surface: rgba(24, 8, 28, 0.5);
+  --input-card-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
+  --input-text: var(--fg);
+  --input-label-shadow: 0 1px 6px rgba(0, 0, 0, 0.33);
+  --input-subtitle-text: rgba(255, 226, 214, 0.74);
+  --input-icon-text: var(--fg);
+  --input-empty-opacity: 0.37;
+  --input-connected-border: rgba(255, 255, 255, 0.24);
+  --input-connected-surface: rgba(40, 14, 44, 0.58);
+  --input-connected-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
+  --input-connected-text: var(--input-text);
+  --input-connected-subtitle-text: var(--input-subtitle-text);
+  --input-connected-icon-text: var(--input-icon-text);
+  --input-recognized-border: rgba(255, 210, 150, 0.32);
+  --input-recognized-surface: rgba(40, 14, 44, 0.58);
+  --input-focus-border: #fff;
+  --input-focus-surface: rgba(255, 255, 255, 0.14);
+  --input-focus-shadow:
+    -12px 6px 30px 2px rgba(var(--theme-start-rgb), 0.45), 12px 6px 30px 2px rgba(var(--theme-end-rgb), 0.45);
+  --input-focus-text: #fff;
+  --input-focus-subtitle-text: rgba(255, 255, 255, 0.88);
+  --input-focus-icon-text: #fff;
+  --input-status-text: rgba(255, 255, 255, 0.87);
+  --input-status-border: rgba(255, 255, 255, 0.2);
+  --input-status-surface: rgba(0, 0, 0, 0.25);
+  --input-connected-status-text: #9bf5c6;
+  --input-connected-status-border: rgba(120, 230, 170, 0.32);
+  --input-connected-status-surface: rgba(10, 60, 36, 0.4);
+  --input-recognized-status-text: #f3d69b;
+  --input-recognized-status-border: rgba(239, 204, 133, 0.28);
+  --input-recognized-status-surface: rgba(90, 60, 19, 0.33);
+  --input-live-status-text: #dae7ff;
+  --input-pinned-status-text: #dce9ff;
+  --input-focus-status-border: rgba(255, 255, 255, 0.6);
+  --input-focus-status-surface: rgba(40, 18, 30, 0.5);
+
+  /* All apps */
+  --back-to-top-surface: rgba(40, 14, 44, 0.72);
+  --back-to-top-border: rgba(255, 220, 205, 0.55);
+
+  /* Settings drawer */
+  --settings-surface: linear-gradient(
+    160deg,
+    rgba(64, 20, 60, 0.94) 0%,
+    rgba(22, 8, 28, 0.96) 50%,
+    rgba(12, 10, 36, 0.98) 100%
+  );
+  --settings-main-surface: rgba(10, 4, 14, 0.25);
+  --settings-border: rgba(255, 255, 255, 0.18);
+  --settings-radius: 28px;
+  --settings-shadow: inset 0 1px rgba(255, 255, 255, 0.16), 0 24px 60px rgba(0, 0, 0, 0.5);
+  --settings-text: var(--fg);
+  --settings-muted: rgba(255, 226, 214, 0.7);
+  --settings-kicker: rgba(255, 226, 214, 0.7);
+  --settings-subtitle: rgba(255, 220, 205, 0.6);
+  --settings-category-text: rgba(255, 244, 238, 0.86);
+  --settings-sidebar-focus-surface: rgba(255, 255, 255, 0.1);
+  --settings-focus-border: #fff;
+  --settings-content-focus-shadow: 0 0 0 3px rgba(10, 4, 14, 0.25), 0 0 0 5px #fff;
+  --settings-scroll-ring-room: 2px; /* room for the 5px focus ring at the edge */
+  --settings-sidebar-line-height: 1.2; /* the font's own line metrics would grow the menu */
+  --surface-control: rgba(255, 255, 255, 0.06);
+  --border-control: rgba(255, 255, 255, 0.14);
+  --choice-selected-surface: var(--theme-gradient);
+  --choice-selected-border: rgba(255, 255, 255, 0.3);
+  --selection-surface: linear-gradient(
+    135deg,
+    rgb(var(--theme-start-rgb)),
+    var(--theme-middle) 55%,
+    rgb(var(--theme-end-rgb))
+  );
+  --control-focused-text: #fff;
+  --control-text: var(--fg);
+  --choice-selected-text: #fff;
+  --selection-text: #fff;
+  --settings-slider-surface: rgba(255, 255, 255, 0.06);
+  --settings-slider-track: rgba(255, 255, 255, 0.16);
+
+  /* App actions menu and toast */
+  --menu-focus-surface: rgba(255, 255, 255, 0.14);
+  --menu-option-text: rgba(255, 244, 238, 0.86);
+  --menu-text: #fff;
+  --toast-surface: linear-gradient(120deg, rgba(64, 20, 60, 0.96), rgba(12, 10, 36, 0.98));
+  --toast-text: var(--fg);
+  --toast-radius: 24px;
+  --toast-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 18px 40px rgba(0, 0, 0, 0.45);
+
+  /* Every proposal theme: moving a card keeps its focus look; sideways rows leave room for the focus glow */
+  --home-card-move-shadow: var(--home-card-focus-shadow);
+  --home-row-clearance: 96px;
+}
+
+/* Painted on the wallpaper: over a light wallpaper, 2.7.0 turns this text dark and the theme steps aside (the
+   miniature in Settings follows its own wallpaper, data-light) */
+:root:not([data-light-background="true"]) body.glass-ui[data-theme="gloss"],
+[data-theme-preview="gloss"]:not([data-light="true"]) {
+  --header-status-divider: rgba(255, 255, 255, 0.32);
+  --home-section-heading-text: rgba(255, 246, 240, 0.9);
+  --home-section-heading-shadow: 0 2px 9px rgba(0, 0, 0, 0.42);
+}

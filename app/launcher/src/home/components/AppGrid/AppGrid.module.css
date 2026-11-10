@@ -1,0 +1,49 @@
+.grid {
+  /* Theme proposal: the Very small size, six apps a row in the Grid. */
+  --app-card-very-small: 265px;
+  --app-card-small: 332px;
+  --app-card-medium: 368px;
+  --app-card-large: 400px;
+  --app-card-size: var(--app-card-small);
+  --app-columns: 5;
+
+  display: grid;
+  grid-template-columns: repeat(var(--app-columns), var(--app-card-size));
+  justify-content: center;
+  gap: 30px 32px;
+  /* Keep focused cards and reorder controls clear of the header and fade. */
+  margin: 24px 0 40px;
+
+  &[data-page="home"] {
+    margin-bottom: 0;
+  }
+
+  &[data-columns="3"] {
+    --app-card-size: var(--app-card-large);
+    --app-columns: 3;
+  }
+
+  &[data-columns="4"] {
+    --app-card-size: var(--app-card-medium);
+    --app-columns: 4;
+  }
+
+  /* Theme proposal: Very small */
+  &[data-columns="6"] {
+    --app-card-size: var(--app-card-very-small);
+    --app-columns: 6;
+  }
+
+  /* Theme proposal: the App size setting alone sets the cards' size, the same in every layout and with every clock
+     (2.7.0 made them smaller in one row and under the custom clock). The layouts only set the gap and margins; one
+     that no longer fits scrolls, like the Grid. */
+  &[data-expanded="true"] {
+    margin-top: 6px;
+  }
+
+  &[data-layout="billboard"],
+  &[data-layout="diptych"] {
+    gap: 24px;
+    margin: 0;
+  }
+}

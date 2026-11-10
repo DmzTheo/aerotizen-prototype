@@ -1,0 +1,32 @@
+/* Theme proposal: the custom clock in a layout's page, painted as in the header and lined up
+   on its start edge (its digits keep their left-to-right order in Arabic). */
+.clock {
+  min-width: 0;
+  color: var(--fg);
+  text-shadow: var(--header-status-shadow, none);
+}
+
+.clock [data-clock="expanded"] {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.clock [data-clock-layout]:not([data-clock-layout="horizontal"]) [data-clock-part="time"] {
+  align-items: flex-start;
+}
+
+.clock [data-weather-part="expanded"] {
+  justify-content: flex-start;
+}
+
+[dir="rtl"] .clock [data-clock="expanded"] {
+  text-align: right;
+}
+
+[dir="rtl"] .clock [data-clock-layout]:not([data-clock-layout="horizontal"]) [data-clock-part="time"] {
+  align-items: flex-end;
+}
+
+[dir="rtl"] .clock [data-clock-layout="horizontal"] [data-clock-part="time"] {
+  justify-content: flex-end;
+}

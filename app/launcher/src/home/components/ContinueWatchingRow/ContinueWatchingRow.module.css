@@ -1,0 +1,9 @@
+.track {
+  position: relative;
+  gap: 24px;
+}
+
+/* Theme proposal: 8px more under the heading, so the ring of a focused programme clears it in every theme. */
+[id="continue-section"] > [data-home-section-heading] {
+  margin-bottom: 25px;
+}

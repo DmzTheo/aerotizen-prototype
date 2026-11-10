@@ -1,0 +1,91 @@
+.option {
+  border: 2px solid var(--border-control);
+  border-radius: var(--control-radius);
+  color: var(--control-text);
+  background: var(--surface-control);
+  transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 1 200px;
+  min-width: 160px;
+  max-width: 100%;
+  height: 72px;
+  padding: 10px 16px;
+  margin-left: 0;
+  font-size: 20px;
+  line-height: 24px;
+  white-space: normal;
+  text-align: center;
+  /* Theme proposal: a badge that does not fit beside the name goes under it instead of splitting the name. */
+  flex-wrap: wrap;
+  align-content: center;
+
+  &[data-focused="true"] {
+    background: var(--choice-focused-surface);
+    color: var(--control-focused-text);
+  }
+
+  &[aria-pressed="true"] {
+    background: var(--choice-selected-surface);
+    /* Theme proposal: text on the selected surface (a light theme selects with a dark surface). */
+    color: var(--choice-selected-text, var(--control-text));
+
+    &:not([data-focused="true"]) {
+      border-color: var(--choice-selected-border);
+    }
+
+    &[data-focused="true"] {
+      color: var(--choice-selected-text, var(--control-focused-text));
+    }
+  }
+}
+
+.label {
+  /* Chromium 69's multiline clamp needs all three legacy WebKit declarations. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: break-word;
+
+  &.singleLine {
+    display: block;
+    -webkit-line-clamp: unset;
+  }
+
+  > svg {
+    margin-right: 8px;
+  }
+
+  [dir="rtl"] & > svg {
+    margin-right: 0;
+    margin-left: 8px;
+  }
+}
+
+.inline {
+  display: flex;
+  align-items: center;
+}
+
+/* Theme proposal: marks a new choice, next to its name (in a corner, the focus ring would cover it). */
+.badge {
+  flex: 0 0 auto;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--update-notice);
+  color: var(--update-notice-text);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18px;
+  letter-spacing: 0.02em;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: 8px;
+    letter-spacing: 0;
+  }
+}

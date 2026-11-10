@@ -1,0 +1,1004 @@
+/* Theme proposal: a theme of the Themes section as a 236x133 miniature of its Home screen
+   (1920x1080 scaled about 1:8), its name below. Four fit on a row of Settings. Chromium 69 has no flex gap: rows are
+   grids, columns use margins. */
+.option {
+  display: flex;
+  flex: 0 0 236px;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* The focusable miniature: the Settings focus ring takes its size and rounded corners. */
+.frame {
+  /* The miniature starts from 2.7.0's Home paint (css/themes.css), not from the theme the Settings are drawn in; a
+     theme's [data-theme-preview] block sets its own. */
+  /* Unset: the header icons take the sketch's text colour, without a circle */
+  --header-icon-text: initial;
+  --header-icon-surface: initial;
+  --header-tab-surface: rgba(28, 28, 30, 0.7);
+  --header-tab-radius: 28px;
+  --header-tab-text: #b8b8c0;
+  --header-tab-plate-surface: rgba(124, 92, 255, 0.16);
+  --header-tab-plate-radius: 20px;
+  --header-tab-plate-text: #fff;
+  --header-tab-underline: transparent;
+  --home-section-heading-text: rgba(250, 252, 255, 0.85);
+  --home-card-radius: 10px;
+  --home-card-focus-gap: transparent;
+  /* Unset: the ring takes the theme's focus colour */
+  --home-card-focus-ring: initial;
+  --continue-card-radius: 10px;
+  --continue-title-text: #fff;
+  /* 2.7.0's card colour, which shows through its transparent label */
+  --continue-label-surface: #1c1c1e;
+  --continue-progress-track: #555;
+  --input-card-surface: #1c1c1e;
+  --input-card-border: transparent;
+  --input-card-radius: 27px;
+  --input-connected-surface: #1c1c1e;
+  --input-connected-border: transparent;
+  --input-recognized-surface: #1c1c1e;
+  --input-recognized-border: transparent;
+  --input-empty-opacity: 0.42;
+  --input-dock-surface: transparent;
+  --input-dock-border: transparent;
+  --input-dock-radius: 37px;
+
+  position: relative;
+  display: block;
+  height: 133px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 2px var(--border-control);
+}
+
+.frame[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--choice-selected-border, var(--wallpaper-label-surface));
+}
+
+/* The selection mark (in the current interface's colours) sits in the corner where the miniature shows no clock. */
+.frame [data-selection-indicator] {
+  top: auto;
+  right: 6px;
+  bottom: 6px;
+  width: 28px;
+  height: 28px;
+
+  > svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+[dir="rtl"] .frame [data-selection-indicator] {
+  right: auto;
+  left: 6px;
+}
+
+.name {
+  display: block;
+  overflow: hidden;
+  margin-top: 10px;
+  color: var(--control-text);
+  font-size: 20px;
+  line-height: 24px;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0.82;
+}
+
+.frame[data-focused="true"] + .name {
+  opacity: 1;
+}
+
+/* ---------- The miniature ---------- */
+.screen {
+  /* Text over a dark wallpaper; a light one gets dark text and soft shadows, like the Home screen. */
+  --sketch-strong: rgba(255, 255, 255, 0.7);
+  --sketch-text: #fff;
+  --sketch-shadow: none;
+  --sketch-empty-surface: transparent;
+  /* Two apps' paint from js/app-catalog.js, on their tiles and on the programmes' badges */
+  --app-netflix: linear-gradient(135deg, #e50914, #8a0610);
+  --app-prime-video: linear-gradient(135deg, #1a98ff, #0f4c81);
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  font-family: var(--font-display, var(--font-ui, "SamsungOne", "Roboto", Arial, sans-serif));
+}
+
+.screen[data-light="true"] {
+  --sketch-strong: rgba(29, 31, 38, 0.62);
+  --sketch-text: #1d1f26;
+  --sketch-shadow: 0 1px 3px rgba(60, 50, 90, 0.22);
+  --home-section-heading-text: var(--sketch-strong);
+}
+
+/* Classic is 2.7.0's own look: its focus colour and the system font, whatever theme the Settings are drawn in, and
+   the empty port's card kept, dimmed (the themes, drawn on Glass, show the port without a card). */
+.screen[data-theme-preview="classic"] {
+  --focus: #7c5cff;
+  --focus-glow: rgba(124, 92, 255, 0.4);
+  --font-ui: initial;
+  --font-display: initial;
+  --home-card-focus-gap: #000;
+  --sketch-empty-surface: #1c1c1e;
+}
+
+/* Header: the three icons, the tabs (Home chosen) and the clock. */
+.icons {
+  position: absolute;
+  top: 5px;
+  left: 9px;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 5px;
+}
+
+.icon {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--header-icon-surface, none);
+  box-shadow: inset 0 0 0 1px var(--header-icon-text, var(--sketch-strong));
+}
+
+.tabs {
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 50px;
+  height: 9px;
+  margin-left: -25px;
+  border-radius: calc(var(--header-tab-radius) / 8);
+  background: var(--header-tab-surface);
+
+  /* Home, the chosen tab, on its plate or above its underline */
+  &::before {
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    left: 1px;
+    width: 20px;
+    border-radius: calc(var(--header-tab-plate-radius) / 8);
+    background: var(--header-tab-plate-surface);
+    box-shadow: inset 0 -1px var(--header-tab-underline);
+    content: "";
+  }
+
+  /* The two names: All apps, and Home through the shadow */
+  &::after {
+    position: absolute;
+    top: 4px;
+    left: 27px;
+    width: 16px;
+    height: 1px;
+    background: var(--header-tab-text);
+    box-shadow: -21px 0 var(--header-tab-plate-text);
+    content: "";
+  }
+}
+
+/* The clock, the date and the weather: one line after the weather with the compact clock, stacked under a custom
+   clock. */
+.clock {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  color: var(--sketch-text);
+  line-height: 1;
+}
+
+.time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 5px;
+  font-weight: 700;
+}
+
+.date,
+.weather,
+.place {
+  display: block;
+  height: 2px;
+  margin-right: 5px;
+  border-radius: 1px;
+  background: var(--sketch-text);
+  opacity: 0.8;
+}
+
+.date {
+  width: 21px;
+}
+
+/* With the compact clock, the weather and its place on one line */
+.weather {
+  width: 23px;
+}
+
+.place {
+  display: none;
+}
+
+.screen:not([data-clock="classic"]) {
+  .clock {
+    top: 5px;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .date {
+    width: 16px;
+    margin: 3px 0 0;
+  }
+
+  .weather {
+    width: 20px;
+    margin: 2px 0 0;
+  }
+
+  .place {
+    display: block;
+    width: 5px;
+    height: 1px;
+    margin: 2px 0 0;
+  }
+}
+
+.screen[data-clock="minimal"] .time {
+  font-size: 10px;
+  font-weight: 200;
+  letter-spacing: 1px;
+  line-height: 1.08;
+}
+
+.screen[data-clock="vertical"] .time {
+  font-size: 14.5px;
+  font-weight: 300;
+  letter-spacing: -0.8px;
+  line-height: 0.85;
+}
+
+.screen[data-clock="bold"] .time {
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -1.3px;
+  line-height: 0.8;
+}
+
+.screen[data-clock="horizontal"] .time {
+  font-size: 13.5px;
+  font-weight: 300;
+}
+
+[dir="rtl"] .icons {
+  right: 9px;
+  left: auto;
+}
+
+[dir="rtl"] .clock {
+  right: auto;
+  left: 8px;
+}
+
+[dir="rtl"] .date,
+[dir="rtl"] .weather {
+  margin: 0 0 0 5px;
+}
+
+[dir="rtl"] .tabs {
+  transform: scaleX(-1);
+}
+
+/* ---------- The Home layout ---------- */
+/* Under the header, which grows with the custom clock (325 to 389px on the TV), except in Quay and the Diptych (below).
+   The sketch holds no text: Arabic mirrors it whole, as it mirrors the Home screen. */
+.content {
+  position: absolute;
+  top: 16px;
+  right: 8px;
+  bottom: 0;
+  left: 8px;
+  direction: ltr;
+}
+
+[dir="rtl"] .content {
+  transform: scaleX(-1);
+}
+
+.screen[data-clock="horizontal"] .content {
+  top: 40px;
+}
+
+.screen[data-clock="minimal"] .content {
+  top: 44px;
+}
+
+.screen[data-clock="bold"] .content {
+  top: 47px;
+}
+
+.screen[data-clock="vertical"] .content {
+  top: 48px;
+}
+
+/* Rows of items: each layout sets their size and spacing. */
+.apps,
+.programmes,
+.inputs {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: start;
+}
+
+.heading {
+  display: block;
+  flex: none;
+  width: 39px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--home-section-heading-text);
+}
+
+/* Grid: the apps first, then Continue Watching and the inputs, cut by the bottom of the screen. */
+.grid {
+  display: flex;
+  flex-direction: column;
+  padding-top: 2px;
+
+  /* Five apps a row, at the small size */
+  > .apps {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(5, 41px);
+    grid-auto-rows: 41px;
+    gap: 4px;
+  }
+
+  > .heading {
+    margin-top: 5px;
+  }
+
+  > .programmes {
+    grid-auto-columns: 50px;
+    grid-auto-rows: 38px;
+    gap: 4px;
+    margin-top: 3px;
+  }
+
+  > .inputs {
+    grid-auto-columns: 43px;
+    grid-auto-rows: 15px;
+    gap: 2px;
+    margin-top: 3px;
+  }
+}
+
+/* Classic lays its input cards out wider and apart, without the Glass dock. */
+.screen[data-theme-preview="classic"] .grid > .inputs {
+  grid-auto-columns: 52px;
+  gap: 4px;
+}
+
+/* Billboard: the programme on the big card and the next ones beside it, then the apps and the inputs. */
+.billboard {
+  display: flex;
+  flex-direction: column;
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: 122px 84px;
+  gap: 4px;
+  height: 55px;
+
+  /* The next programmes, filled column by column */
+  > .programmes {
+    grid-template-rows: 1fr 1fr;
+    grid-auto-columns: 40px;
+    gap: 3px 4px;
+  }
+}
+
+.lower {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+
+  > .heading {
+    width: 26px;
+    margin-bottom: 3px;
+  }
+}
+
+.billboard .apps {
+  grid-auto-columns: 41px;
+  grid-auto-rows: 41px;
+  gap: 3px;
+}
+
+.billboard .inputs {
+  grid-auto-flow: row;
+  grid-template-columns: 40px 40px;
+  grid-auto-rows: 11px;
+  gap: 2px 4px;
+}
+
+/* Lounge: Continue Watching, the apps and the inputs, each under its heading. */
+.lounge {
+  display: flex;
+  flex-direction: column;
+
+  > .heading + * {
+    margin-top: 3px;
+  }
+
+  > * + .heading {
+    margin-top: 6px;
+  }
+
+  > .programmes {
+    grid-auto-columns: 50px;
+    grid-auto-rows: 38px;
+    gap: 4px;
+  }
+
+  > .apps {
+    grid-auto-columns: 41px;
+    grid-auto-rows: 41px;
+    gap: 4px;
+  }
+
+  > .inputs {
+    grid-auto-columns: 43px;
+    grid-auto-rows: 14px;
+    gap: 2px;
+  }
+}
+
+/* The programme's label under its picture: its title on the label's surface */
+.grid .card,
+.lounge .card,
+.stage .card {
+  --caption:
+    linear-gradient(var(--continue-title-text), var(--continue-title-text)) left 4px bottom calc(var(--label) / 2) / 45%
+      1px no-repeat,
+    linear-gradient(var(--continue-label-surface), var(--continue-label-surface)) left bottom / 100% var(--label)
+      no-repeat;
+}
+
+.grid .card,
+.lounge .card {
+  --label: 10px;
+}
+
+.stage .card {
+  --label: 8px;
+  --badge-size: 5px;
+}
+
+/* The inputs dock of the Grid and the Lounge */
+.grid > .inputs,
+.lounge > .inputs {
+  align-self: flex-start;
+  padding: 1px;
+  border-radius: calc(var(--input-dock-radius) / 8);
+  background: var(--input-dock-surface);
+  box-shadow: inset 0 0 0 1px var(--input-dock-border);
+}
+
+/* Diptych: the programme's caption and the inputs on the left, the pictures and the apps on the right. */
+.diptych {
+  position: absolute;
+  right: 0;
+  bottom: 13px;
+  left: 0;
+  display: grid;
+  grid-template-columns: 66px 1fr;
+  gap: 5px;
+}
+
+.column,
+.shelf {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.column > .inputs {
+  grid-auto-flow: row;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 8px;
+  gap: 1px 3px;
+  margin-top: 5px;
+}
+
+.shelf {
+  > .programmes {
+    grid-auto-columns: 52px;
+    grid-auto-rows: 29px;
+    gap: 4px;
+  }
+
+  > .apps {
+    grid-auto-columns: 41px;
+    grid-auto-rows: 41px;
+    gap: 3px;
+    margin-top: 4px;
+  }
+}
+
+/* Quay: the wallpaper open, the programmes on the end side above the glass band. Moment: the greeting and the
+   programmes side by side in the middle, above the same band. */
+.quay,
+.moment {
+  position: absolute;
+  right: 0;
+  bottom: 12px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.moment {
+  top: 0;
+}
+
+.quay > .programmes,
+.middle > .programmes {
+  grid-auto-columns: 50px;
+  grid-auto-rows: 28px;
+  gap: 4px;
+}
+
+.quay > .programmes {
+  align-self: flex-end;
+  margin-bottom: 5px;
+}
+
+.middle {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 0;
+  margin-bottom: 5px;
+}
+
+.greeting {
+  display: flex;
+  flex-direction: column;
+
+  > .subtitle {
+    width: 20px;
+  }
+
+  > .title {
+    width: 66px;
+    height: 10px;
+    margin-top: 3px;
+  }
+
+  > .title + .subtitle {
+    width: 24px;
+    height: 4px;
+    margin-top: 3px;
+    background: var(--sketch-text);
+  }
+}
+
+.band {
+  display: flex;
+  align-self: center;
+  padding: 3px;
+  border-radius: calc(var(--home-band-radius, var(--input-dock-radius)) / 8);
+  background: var(--home-band-surface, var(--input-dock-surface));
+  box-shadow: inset 0 0 0 1px var(--home-band-border, var(--input-dock-border));
+
+  > .apps {
+    grid-auto-columns: 41px;
+    grid-auto-rows: 41px;
+    gap: 3px;
+  }
+
+  > .inputs {
+    grid-template-rows: 1fr 1fr;
+    grid-auto-columns: 34px;
+    gap: 2px;
+    margin-left: 3px;
+    padding-left: 3px;
+    border-left: 1px solid rgba(255, 255, 255, 0.16);
+  }
+}
+
+/* ---------- The caption of a programme ---------- */
+.kicker,
+.title,
+.subtitle,
+.progress,
+.button {
+  display: block;
+  flex: none;
+  border-radius: 1px;
+}
+
+.kicker {
+  width: 31px;
+  height: 2px;
+  background: var(--home-section-heading-text);
+}
+
+.title {
+  width: 32px;
+  height: 5px;
+  margin-top: 2px;
+  background: var(--sketch-text);
+}
+
+.subtitle {
+  width: 13px;
+  height: 2px;
+  margin-top: 2px;
+  background: var(--sketch-strong);
+}
+
+.progress {
+  width: 46px;
+  height: 1px;
+  margin-top: 3px;
+  background:
+    linear-gradient(var(--focus), var(--focus)) 0 0 / 62% 100% no-repeat,
+    var(--continue-progress-track);
+}
+
+.button {
+  width: 23px;
+  height: 6px;
+  margin-top: 3px;
+  border-radius: 3px;
+  background: var(--focus);
+}
+
+/* ---------- Apps ---------- */
+/* The five apps, in the Home's order, painted as 2.7.0 paints them (FireplaceCard, and js/app-catalog.js for the
+   background and the logo colour), each with a hint of its logo: the Fireplace, YouTube, Netflix, Stremio and Prime
+   Video. Netflix and Prime Video (set on .screen) also paint the programmes' badges. */
+
+.tile {
+  position: relative;
+  border-radius: calc(var(--home-card-radius) / 8);
+  box-shadow: var(--sketch-shadow);
+
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 8%;
+    border-radius: 1px;
+    background: #fff;
+    transform: translate(-50%, -50%);
+    content: "";
+  }
+}
+
+.tile:nth-child(1) {
+  background: radial-gradient(110% 120% at 50% 110%, #ff8a1e 0%, #c2380d 35%, #3a0d04 70%, #120402 100%);
+}
+
+/* The flame: a drop with its point up */
+.tile:nth-child(1)::after {
+  width: 30%;
+  height: 30%;
+  border-radius: 50% 0 50% 50%;
+  background: #ffd27a;
+  transform: translate(-50%, -38%) rotate(-45deg);
+}
+
+.tile:nth-child(2) {
+  background: #fff;
+}
+
+.tile:nth-child(2)::after {
+  width: 42%;
+  height: 30%;
+  border-radius: 25%;
+  background: #f00;
+}
+
+.tile:nth-child(3) {
+  background: var(--app-netflix);
+}
+
+/* The N: two strokes and the diagonal between them */
+.tile:nth-child(3)::after {
+  width: 30%;
+  height: 52%;
+  border-radius: 0;
+  background:
+    linear-gradient(to top right, transparent 38%, #fff 38%, #fff 62%, transparent 62%),
+    linear-gradient(90deg, #fff 30%, transparent 30%, transparent 70%, #fff 70%);
+}
+
+/* A letter: turned back when Arabic mirrors the sketch */
+[dir="rtl"] .tile:nth-child(3)::after {
+  transform: translate(-50%, -50%) scaleX(-1);
+}
+
+.tile:nth-child(4) {
+  background: linear-gradient(135deg, #7b5bf5, #2b1d68);
+}
+
+.tile:nth-child(4)::after {
+  width: 32%;
+  height: 32%;
+  border-radius: 15%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.tile:nth-child(5) {
+  background: var(--app-prime-video);
+}
+
+/* ---------- Programmes ---------- */
+/* Continue Watching's pictures, drawn like the demo's artwork (src/devContinueWatching.ts, a 640x360 picture): a sky
+   from the programme's dark colour to its light one, a moon that moves right and grows with the programme's index, a
+   far ridge (the dark colour at 60%) and a near one; then the app's badge in the corner and the progress, in the
+   focus colour on the theme's track. Under a label, the card's own surface. */
+.card,
+.hero {
+  --badge-size: 7px;
+  --track: var(--continue-progress-track);
+  /* A label under the picture, a title over it and a shade: none unless the layout draws them */
+  --label: 0px;
+  --caption: none;
+  --overlay: none;
+  --shade: none;
+
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--continue-card-radius) / 8);
+  background:
+    var(--badge) right 2px top 2px / var(--badge-size) var(--badge-size) no-repeat,
+    var(--shade),
+    radial-gradient(
+        ellipse calc(6.72% + 0.94% * var(--i)) calc(11.94% + 1.67% * var(--i)) at calc(22.34% + 13.59% * var(--i))
+          calc(35.56% - 3.61% * var(--i)),
+        rgba(255, 245, 216, 0.78) 96%,
+        transparent 100%
+      )
+      left top / 100% calc(100% - var(--label)) no-repeat,
+    var(--caption),
+    linear-gradient(var(--dark), var(--light)) left top / 100% calc(100% - var(--label)) no-repeat,
+    var(--continue-surface);
+  box-shadow: var(--sketch-shadow);
+}
+
+/* Flat: a nested rule under a list of selectors compiles to :is(), which Chromium 69 lacks. */
+.card::before,
+.hero::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: var(--label);
+  left: 0;
+  background: var(--dark);
+  opacity: 0.6;
+  clip-path: polygon(0 66.67%, 17.5% 43.61%, 37.03% 68.61%, 60.94% 42.22%, 84.38% 65%, 100% 47.22%, 100% 100%, 0 100%);
+  content: "";
+}
+
+.card::after,
+.hero::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: var(--label);
+  left: 0;
+  background:
+    var(--overlay),
+    linear-gradient(var(--focus), var(--focus)) left bottom / var(--progress) 1px no-repeat,
+    linear-gradient(var(--track), var(--track)) left bottom / 100% 1px no-repeat,
+    var(--dark);
+  clip-path: polygon(0 78.89%, 20.31% 63.06%, 43.75% 83.33%, 67.5% 61.39%, 100% 77.5%, 100% 100%, 0 100%);
+  content: "";
+}
+
+.card[data-programme="0"],
+.hero {
+  --i: 0;
+  --dark: #142854;
+  --light: #6e9ba8;
+  --badge: var(--app-netflix);
+  --progress: 62%;
+}
+
+.card[data-programme="1"] {
+  --i: 1;
+  --dark: #241a48;
+  --light: #d5837c;
+  --badge: var(--app-prime-video);
+  --progress: 0%;
+  --track: transparent;
+}
+
+.card[data-programme="2"] {
+  --i: 2;
+  --dark: #0e3531;
+  --light: #bbaf63;
+  --badge: linear-gradient(#fff, #fff);
+  --progress: 83%;
+}
+
+/* Apple TV's badge, in its catalogue background */
+.card[data-programme="3"] {
+  --i: 3;
+  --dark: #20345b;
+  --light: #7baad9;
+  --badge: linear-gradient(135deg, #4a4a4f, #1c1c1e);
+  --progress: 43%;
+}
+
+.card[data-programme="4"] {
+  --i: 4;
+  --dark: #34233d;
+  --light: #b998ba;
+  --badge: var(--app-prime-video);
+  --progress: 16%;
+}
+
+/* Billboard's big card: its caption over the picture, which a shade darkens on the caption's side. */
+.hero {
+  --shade: linear-gradient(90deg, rgba(8, 6, 20, 0.72), rgba(8, 6, 20, 0) 70%);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 6px 5px;
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* ---------- Inputs ---------- */
+/* An input card: its icon and its name. The demo's inputs in order: a console on (connected), an empty port, a
+   computer recognised, then Live TV. */
+.input {
+  position: relative;
+  border-radius: calc(var(--input-card-radius) / 8);
+  background: var(--input-card-surface);
+  box-shadow: inset 0 0 0 1px var(--input-card-border);
+
+  &::before {
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    width: 3px;
+    height: 3px;
+    margin-top: -1.5px;
+    border-radius: 1px;
+    background: var(--sketch-strong);
+    content: "";
+  }
+
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 9px;
+    width: 35%;
+    height: 1px;
+    background: var(--sketch-strong);
+    content: "";
+  }
+}
+
+.input:nth-child(1) {
+  background: var(--input-connected-surface);
+  box-shadow: inset 0 0 0 1px var(--input-connected-border);
+}
+
+.input:nth-child(2) {
+  background: var(--sketch-empty-surface);
+  box-shadow: none;
+  opacity: var(--input-empty-opacity);
+}
+
+.input:nth-child(3) {
+  background: var(--input-recognized-surface);
+  box-shadow: inset 0 0 0 1px var(--input-recognized-border);
+}
+
+/* The focused item, ringed like the theme's focused card: its gap, its ring (the focus colour unless the theme sets
+   one) and its glow. */
+.focus {
+  box-shadow:
+    0 0 0 1px var(--home-card-focus-gap),
+    0 0 0 2.5px var(--home-card-focus-ring, var(--focus)),
+    0 0 6px 1px var(--focus-glow);
+}
+
+/* Quay turns the header round: the clock first, the icons last. Moment shows the clock in its greeting and keeps
+   the compact header with every clock. */
+.screen[data-layout="quay"] .icons {
+  right: 9px;
+  left: auto;
+}
+
+.screen[data-layout="quay"] .clock {
+  right: auto;
+  left: 8px;
+}
+
+.screen[data-layout="quay"]:not([data-clock="classic"]) .clock,
+.screen[data-layout="quay"] .time {
+  align-items: flex-start;
+}
+
+[dir="rtl"] .screen[data-layout="quay"] .icons {
+  right: auto;
+  left: 9px;
+}
+
+[dir="rtl"] .screen[data-layout="quay"] .clock {
+  right: 8px;
+  left: auto;
+}
+
+[dir="rtl"] .screen[data-layout="quay"]:not([data-clock="classic"]) .clock,
+[dir="rtl"] .screen[data-layout="quay"] .time {
+  align-items: flex-end;
+}
+
+/* Quay and the Diptych bring a custom clock down into the page, at the top on the start side (y 136px on the TV):
+   the header keeps its compact height. */
+.screen[data-layout="quay"]:not([data-clock="classic"]) .clock,
+.screen[data-layout="diptych"]:not([data-clock="classic"]) .clock {
+  top: 17px;
+  right: auto;
+  left: 8px;
+}
+
+.screen[data-layout="diptych"]:not([data-clock="classic"]) .clock,
+.screen[data-layout="diptych"]:not([data-clock="classic"]) .time {
+  align-items: flex-start;
+}
+
+.screen[data-layout="quay"]:not([data-clock="classic"]) .content,
+.screen[data-layout="diptych"]:not([data-clock="classic"]) .content {
+  top: 16px;
+}
+
+[dir="rtl"] .screen[data-layout="quay"]:not([data-clock="classic"]) .clock,
+[dir="rtl"] .screen[data-layout="diptych"]:not([data-clock="classic"]) .clock {
+  right: 8px;
+  left: auto;
+}
+
+[dir="rtl"] .screen[data-layout="diptych"]:not([data-clock="classic"]) .clock,
+[dir="rtl"] .screen[data-layout="diptych"]:not([data-clock="classic"]) .time {
+  align-items: flex-end;
+}
+
+.screen[data-layout="moment"] .clock {
+  display: none;
+}
+
+.screen[data-layout="moment"] .content {
+  top: 16px;
+}

@@ -1,0 +1,60 @@
+/* Theme proposal: the Billboard top without Continue Watching items, 1792x520. */
+.banner {
+  position: relative;
+  flex: 1 1 auto;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--continue-card-radius, 10px);
+  background: var(--app-background, var(--card));
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    /* The hero's shade, defined on the Billboard layout. */
+    background: var(--billboard-shade);
+  }
+}
+
+/* The app's Home card artwork at the banner's height, centred at three quarters of its width. */
+.art {
+  --app-card-size: 520px;
+
+  position: absolute;
+  top: 0;
+  right: 188px;
+  display: flex;
+  width: 520px;
+  height: 520px;
+
+  [dir="rtl"] & {
+    right: auto;
+    left: 188px;
+  }
+}
+
+.title {
+  position: absolute;
+  z-index: 2;
+  bottom: 40px;
+  left: 48px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  width: 640px;
+  overflow: hidden;
+  color: var(--picture-text);
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.15;
+  text-shadow: var(--billboard-text-shadow);
+
+  [dir="rtl"] & {
+    right: 48px;
+    left: auto;
+  }
+}

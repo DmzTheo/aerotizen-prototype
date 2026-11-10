@@ -1,0 +1,172 @@
+/* Theme proposal: the Moment Home layout. Above the band, in the middle of the height left
+   under the header: the greeting on the start side, what to resume (or the weather card) on the end side. */
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-bottom: calc(var(--home-bottom-fade) + 16px);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 40px;
+}
+
+/* ---------- The greeting: text on the wallpaper, as dark as the clock on a light one ---------- */
+.greeting {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--clock-text);
+  text-shadow: var(--clock-shadow);
+}
+
+.date {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 5px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.hello {
+  margin-top: 14px;
+  font-family: var(--font-display, inherit);
+  font-size: 112px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1.05;
+}
+
+.time {
+  margin-top: 18px;
+  font-family: var(--font-display, inherit);
+  font-size: 48px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+/* With programmes beside the greeting, the weather gets a line under the time. Margins rather than flex gaps, which
+   Chromium 69 lacks. */
+.weather {
+  display: flex;
+  align-items: center;
+  margin-top: 14px;
+  font-size: 28px;
+  line-height: 1.2;
+  white-space: nowrap;
+
+  > svg {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    margin-right: 12px;
+  }
+}
+
+[dir="rtl"] .weather > svg {
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+.lineTemperature {
+  font-weight: 700;
+}
+
+.lineCondition,
+.lineCity {
+  margin-left: 14px;
+}
+
+[dir="rtl"] .lineCondition,
+[dir="rtl"] .lineCity {
+  margin-right: 14px;
+  margin-left: 0;
+}
+
+.lineCity {
+  color: var(--weather-location-text);
+}
+
+/* ---------- The end side: what to resume, or the weather card in the band's paint ---------- */
+.shelf {
+  flex: 0 1 auto;
+  margin-left: 48px;
+}
+
+[dir="rtl"] .shelf {
+  margin-right: 48px;
+  margin-left: 0;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  flex: none;
+  margin-left: 48px;
+  padding: 36px 48px 36px 40px;
+  border: 1px solid var(--home-band-border, var(--input-dock-border));
+  border-radius: var(--home-band-radius, var(--input-dock-radius, 37px));
+  background: var(--home-band-surface, var(--input-dock-surface));
+  box-shadow: var(--home-band-shadow, var(--input-dock-shadow));
+  color: var(--fg);
+}
+
+[dir="rtl"] .card {
+  margin-right: 48px;
+  margin-left: 0;
+  padding: 36px 40px 36px 48px;
+}
+
+.cardIcon {
+  display: flex;
+
+  > svg {
+    width: 104px;
+    height: 104px;
+  }
+}
+
+.temperature {
+  margin-left: 20px;
+  font-family: var(--font-display, inherit);
+  font-size: 128px;
+  font-weight: 300;
+  letter-spacing: -4px;
+  line-height: 1;
+}
+
+.cardText {
+  display: flex;
+  flex-direction: column;
+  margin-left: 40px;
+}
+
+[dir="rtl"] .temperature {
+  margin-right: 20px;
+  margin-left: 0;
+}
+
+[dir="rtl"] .cardText {
+  margin-right: 40px;
+  margin-left: 0;
+}
+
+.condition {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.city {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 26px;
+  line-height: 1.2;
+  white-space: nowrap;
+}

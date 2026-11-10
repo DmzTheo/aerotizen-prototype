@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AeroTizen Backgrounds</title>
+    <link rel="stylesheet" href="gradients.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        color: #f2f3f7;
+        font:
+          16px/1.4 "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+      }
+      .stage {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow: hidden;
+      }
+      .panel {
+        position: fixed;
+        left: 24px;
+        bottom: 24px;
+        max-width: calc(100vw - 48px);
+        box-sizing: border-box;
+        padding: 16px 18px;
+        border-radius: 16px;
+        background: rgba(12, 13, 18, 0.78);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      }
+      .panel[hidden] {
+        display: none;
+      }
+      .choices {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -8px -8px 0;
+      }
+      .choices button {
+        min-width: 112px;
+        margin: 0 8px 8px 0;
+        padding: 10px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 999px;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      .choices button[aria-pressed="true"] {
+        border-color: #fff;
+        background: #fff;
+        color: #111;
+      }
+      .choices button:focus,
+      .speed input:focus {
+        outline: 3px solid #7cc4ff;
+        outline-offset: 2px;
+      }
+      .speed {
+        display: flex;
+        align-items: center;
+        margin-top: 14px;
+      }
+      .speed input {
+        width: 220px;
+        margin: 0 12px;
+      }
+      .speed output {
+        min-width: 3.5em;
+        font-variant-numeric: tabular-nums;
+      }
+      .readout {
+        margin-top: 10px;
+        font-variant-numeric: tabular-nums;
+        color: #c9ccd6;
+      }
+      .hint {
+        margin-top: 6px;
+        font-size: 13px;
+        color: #9a9eab;
+      }
+      .warning {
+        margin-top: 8px;
+        color: #ffb36b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage" id="stage"></div>
+    <div class="panel" id="panel" role="group" aria-label="Background demo">
+      <div class="choices">
+        <button type="button" data-bg="pastel" aria-pressed="false">Pastel</button>
+        <button type="button" data-bg="coral" aria-pressed="false">Coral</button>
+        <button type="button" data-bg="prism" aria-pressed="false">Prism</button>
+        <button type="button" data-bg="stage" aria-pressed="false">Stage</button>
+        <button type="button" data-bg="borealis" aria-pressed="false">Borealis</button>
+        <button type="button" data-bg="twilightpeaks" aria-pressed="false">Twilight Peaks</button>
+      </div>
+      <div class="speed">
+        <label for="speed">Stage speed</label>
+        <input type="range" id="speed" min="0" max="3" step="0.05" value="1" />
+        <output id="speedValue" for="speed">1.00×</output>
+      </div>
+      <div class="readout" id="readout">–</div>
+      <div class="hint">Keys 1–6 switch background, H hides this panel.</div>
+      <div class="warning" id="warning" hidden></div>
+    </div>
+    <script src="gradients.js"></script>
+    <script src="stage.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        var NAMES = ["pastel", "coral", "prism", "stage", "borealis", "twilightpeaks"];
+        var params = new URLSearchParams(location.search);
+        var stage = document.getElementById("stage");
+        var panel = document.getElementById("panel");
+        var slider = document.getElementById("speed");
+        var speedValue = document.getElementById("speedValue");
+        var readout = document.getElementById("readout");
+        var warning = document.getElementById("warning");
+        var buttons = Array.prototype.slice.call(document.querySelectorAll("[data-bg]"));
+        var stageBackground = null;
+        var current = null;
+        var speed = 1;
+
+        function setSpeed(value) {
+          speed = value;
+          slider.value = String(value);
+          speedValue.textContent = value.toFixed(2) + "×";
+          if (stageBackground) {
+            stageBackground.setSpeed(value);
+          }
+        }
+
+        function show(name) {
+          if (NAMES.indexOf(name) < 0 || name === current) {
+            return;
+          }
+          if (stageBackground) {
+            stageBackground.destroy();
+            stageBackground = null;
+          }
+          stage.className = "stage";
+          if (name === "stage") {
+            stageBackground = window.StageBackground.mount(stage, { speed: speed });
+          } else {
+            stage.classList.add("bg-" + name);
+          }
+          current = name;
+          buttons.forEach(function (button) {
+            button.setAttribute("aria-pressed", String(button.getAttribute("data-bg") === name));
+          });
+          params.set("bg", name);
+          history.replaceState(null, "", "?" + params.toString());
+          updateReadout();
+        }
+
+        function updateReadout() {
+          if (!stageBackground) {
+            readout.textContent = "Static CSS gradient: nothing redrawn, 0 fps by design.";
+            return;
+          }
+          var stats = stageBackground.stats();
+          if (!stats.webgl) {
+            readout.textContent = "WebGL unavailable: showing the CSS fallback.";
+            return;
+          }
+          readout.textContent = stats.running
+            ? "Stage: " + stats.fps + " fps (960×540 buffer, capped at 30)"
+            : "Stage: paused";
+        }
+
+        // gradients.css and gradients.js must stay identical: compare what the browser computes.
+        function checkGradientSources() {
+          var drift = [];
+          ["pastel", "coral", "prism", "borealis", "twilightpeaks"].forEach(function (name) {
+            var byClass = document.createElement("div");
+            var byScript = document.createElement("div");
+            byClass.className = "bg-" + name;
+            byScript.style.background = window.AEROTIZEN_GRADIENTS[name];
+            document.body.appendChild(byClass);
+            document.body.appendChild(byScript);
+            var same = getComputedStyle(byClass).backgroundImage === getComputedStyle(byScript).backgroundImage;
+            document.body.removeChild(byClass);
+            document.body.removeChild(byScript);
+            if (!same) {
+              drift.push(name);
+            }
+          });
+          if (drift.length) {
+            warning.hidden = false;
+            warning.textContent = "gradients.css and gradients.js differ for: " + drift.join(", ");
+          }
+          document.documentElement.setAttribute("data-gradients-in-sync", String(!drift.length));
+        }
+
+        buttons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            show(button.getAttribute("data-bg"));
+          });
+        });
+        slider.addEventListener("input", function () {
+          setSpeed(Number(slider.value));
+        });
+        document.addEventListener("keydown", function (event) {
+          var index = ["1", "2", "3", "4", "5", "6"].indexOf(event.key);
+          if (index >= 0) {
+            show(NAMES[index]);
+          } else if (event.key === "h" || event.key === "H") {
+            panel.hidden = !panel.hidden;
+          }
+        });
+
+        var initialSpeed = Number(params.get("speed"));
+        setSpeed(params.has("speed") && initialSpeed >= 0 ? initialSpeed : 1);
+        panel.hidden = params.get("ui") === "0";
+        checkGradientSources();
+        show(params.get("bg") || "stage");
+        setInterval(updateReadout, 500);
+
+        window.backgroundDemo = {
+          show: show,
+          setSpeed: setSpeed,
+          stats: function () {
+            return stageBackground ? stageBackground.stats() : null;
+          },
+        };
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+/* Theme proposal: the caption naming what is in focus: up to three 56px lines, the details
+   and the action. */
+.caption {
+  min-width: 0;
+  color: var(--home-section-heading-text);
+  text-shadow: var(--home-section-heading-shadow);
+}
+
+.kicker {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  opacity: 0.88;
+}
+
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  margin-top: 12px;
+  overflow: hidden;
+  /* Over a light wallpaper, as dark as the clock */
+  color: var(--caption-title-text, inherit);
+  font-family: var(--font-display, inherit);
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+.meta {
+  margin-top: 14px;
+  font-size: 24px;
+  line-height: 1.25;
+  opacity: 0.85;
+}
+
+/* Over a light wallpaper, the track darkens like the text (the cards' own track is drawn for their label) */
+.progress {
+  width: 380px;
+  height: 5px;
+  margin-top: 18px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--caption-progress-track, var(--continue-progress-track));
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--focus);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  height: 56px;
+  margin-top: 24px;
+  padding: 0 28px;
+  border-radius: 30px;
+  /* The focus colour with dark text; a theme can change both (Frost: its dark accent with white text). */
+  background: var(--caption-button-surface, var(--focus));
+  color: var(--caption-button-text, #000);
+  font-size: 22px;
+  font-weight: 600;
+  text-shadow: none;
+
+  /* A margin rather than a flex gap, which Chromium 69 lacks */
+  > svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+  }
+}
+
+/* Flat: nested under the child rule, it would compile to :is(), which Chromium 69 lacks. */
+[dir="rtl"] .action > svg {
+  margin-right: 0;
+  margin-left: 12px;
+}

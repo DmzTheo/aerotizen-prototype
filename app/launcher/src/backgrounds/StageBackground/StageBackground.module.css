@@ -1,0 +1,13 @@
+/* Stage fills the background layer. In right-to-left languages its light comes from the other side, like the
+   proposal's gradient wallpapers; the halftone layer is symmetrical and is never flipped. */
+.host {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  [dir="rtl"] & > canvas {
+    transform: scaleX(-1);
+  }
+}

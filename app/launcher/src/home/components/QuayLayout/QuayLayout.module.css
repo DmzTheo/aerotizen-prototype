@@ -1,0 +1,32 @@
+/* Theme proposal: the Quay Home layout in the height left under the header. Above the band,
+   the custom clock at the top on the start side and the programmes at the bottom on the end side share the same
+   height; the band sits at the bottom, clear of the bottom fade. When they no longer fit, the layout runs below the
+   screen and scrolls, like the Grid. */
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-bottom: calc(var(--home-bottom-fade) + 16px);
+}
+
+/* Takes the free height while the layout fits; past that it overflows downward (flex-end would push it up, out of
+   reach). */
+.top {
+  display: flex;
+  flex: 1 0 auto;
+  align-items: flex-end;
+  padding-bottom: 40px;
+}
+
+.clock {
+  align-self: flex-start;
+}
+
+.shelf {
+  margin-left: auto;
+}
+
+[dir="rtl"] .shelf {
+  margin-right: auto;
+  margin-left: 0;
+}

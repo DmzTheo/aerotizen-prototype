@@ -1,0 +1,514 @@
+/* Theme proposal: the Billboard Home layout, on the 1920x1080 canvas. With the compact
+   clock, top area y 126–646: hero x 64–1064, side cards from x 1088 in a window x 1072–1920. Headings y 686, content
+   from y 731: apps band x 64–1110 (window to x 1133; to the screen edge without inputs), inputs block x 1172–1856.
+   The top's height comes from the App size alone (two rows of side cards), whatever the clock. The real cards keep
+   their own styles; the rules below only place and resize them, through their data hooks. */
+
+.layout {
+  /* The shade and text shadow that keep white text readable over a picture: the hero's, and the banner's shown when
+     there is nothing to resume. The shade runs from the text side, so right-to-left languages turn it round. */
+  --billboard-shade-angle: 90deg;
+  --billboard-shade:
+    linear-gradient(var(--billboard-shade-angle), rgba(0, 0, 0, 0.74) 0%, rgba(0, 0, 0, 0.4) 42%, rgba(0, 0, 0, 0) 72%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0) 50%);
+  --billboard-text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* Clear of the bottom fade, like the real docked inputs. */
+  padding-bottom: calc(var(--home-bottom-fade) + 16px);
+}
+
+[dir="rtl"] .layout {
+  --billboard-shade-angle: 270deg;
+}
+
+/* The top holds two rows of side cards: 520px without apps, less with apps (sized to the App size, below), so that the
+   page fits with the compact clock. A taller clock only moves everything down: the layout then runs below the screen
+   and scrolls, like the Grid. */
+.top {
+  display: flex;
+  flex: none;
+  height: 520px;
+  margin-top: 6px;
+}
+
+.bottom {
+  display: flex;
+  flex: none;
+  margin-top: 40px;
+}
+
+/* ---------- Hero: the first card fills 1000x520, its ring without zoom ---------- */
+.hero {
+  position: relative;
+  flex: 0 0 1000px;
+  height: 100%;
+
+  > [data-key] {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    flex: none;
+    width: 100%;
+    height: 100%;
+    padding: 0 0 40px 48px;
+    color: var(--picture-text);
+    text-shadow: var(--billboard-text-shadow);
+    transform: none;
+
+    &[data-focused="true"] {
+      transform: none;
+      box-shadow: var(--continue-focus-shadow-top, var(--continue-focus-shadow));
+    }
+  }
+
+  [dir="rtl"] & > [data-key] {
+    padding: 0 48px 40px 0;
+  }
+}
+
+.hero [data-continue-part="artwork"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+
+  /* The shade keeps the white text readable over any picture. */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: var(--billboard-shade);
+  }
+
+  > [data-continue-part="image"] {
+    object-fit: cover;
+    object-position: 50% 0;
+  }
+
+  > [data-continue-part="source-badge"] {
+    top: 18px;
+    right: 18px;
+  }
+
+  /* The hero has its own Continue button: no theme play mark over the picture. */
+  &::after {
+    display: none;
+  }
+}
+
+/* Text column, bottom left: kicker, title (2 lines), episode, progress, Continue. White over the picture in every
+   theme (themes colour card labels for their own label surfaces); the episode in the Glass episode colour. */
+.kicker {
+  position: relative;
+  order: 1;
+  color: var(--picture-text);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  opacity: 0.88;
+}
+
+/* .layout outweighs the focused card's label surface and title colour. */
+.layout .hero > [data-key] [data-continue-part="label"] {
+  position: relative;
+  order: 2;
+  display: block;
+  width: 640px;
+  height: auto;
+  margin-top: 10px;
+  padding: 0;
+  background: none;
+
+  [data-continue-part="title"] {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    max-height: none;
+    white-space: normal;
+    color: var(--picture-text);
+    font-size: 44px;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  [data-continue-part="episode"] {
+    margin-top: 8px;
+    color: var(--picture-subtitle-text);
+    font-size: 26px;
+    line-height: 1.2;
+  }
+}
+
+.layout .hero > [data-key] [data-continue-part="progress"] {
+  position: relative;
+  order: 3;
+  width: 380px;
+  height: 5px;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 3px;
+
+  &[data-empty="true"] {
+    visibility: hidden;
+  }
+}
+
+.resume {
+  position: relative;
+  order: 4;
+  display: inline-flex;
+  align-items: center;
+  height: 60px;
+  margin-top: 22px;
+  padding: 0 30px;
+  border-radius: 32px;
+  /* The focus colour with dark text; a theme can change both (Frost: white with graphite text). */
+  background: var(--billboard-button-surface, var(--focus));
+  color: var(--billboard-button-text, #000);
+  font-size: 24px;
+  font-weight: 600;
+  text-shadow: none;
+
+  /* A margin rather than a flex gap, which Chromium 69 lacks */
+  > svg {
+    width: 22px;
+    height: 22px;
+    margin-right: 12px;
+  }
+}
+
+/* Flat: nested under the child rule, it would compile to :is(), which Chromium 69 lacks. */
+[dir="rtl"] .resume > svg {
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+/* ---------- Side cards: 330x250 (186 art + 5 progress + 59 label), two rows filled column by column ---------- */
+.side {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 4px;
+
+  [dir="rtl"] & {
+    margin-right: 4px;
+    margin-left: 0;
+  }
+
+  /* The row's window: from x 1068 to the screen edge, cards from x 1088 (20px for the thickest focus ring). */
+  > [data-horizontal-scroller][data-enabled="true"] {
+    margin-left: 0;
+    padding-left: 20px;
+  }
+
+  [dir="rtl"] & > [data-horizontal-scroller][data-enabled="true"] {
+    margin-right: 0;
+    margin-left: calc(-1 * var(--home-side-padding));
+    padding-right: 20px;
+    padding-left: var(--home-side-padding);
+  }
+}
+
+.side .sideTrack[data-enabled="true"] {
+  grid-template-rows: 250px 250px;
+  grid-auto-columns: 330px;
+  gap: 20px 24px;
+
+  > [data-key] {
+    flex: none;
+    width: 330px;
+    height: 250px;
+  }
+
+  /* The top row sits 14px under the header: the card grows downward and its glow sits lower. */
+  > [data-key]:nth-child(odd)[data-focused="true"] {
+    transform: translate3d(0, 2.75%, 0) scale(1.035);
+    box-shadow: var(--continue-focus-shadow-top, var(--continue-focus-shadow));
+  }
+
+  [data-continue-part="artwork"] {
+    width: 330px;
+    height: 186px;
+  }
+
+  [data-continue-part="source-badge"] {
+    top: 10px;
+    right: 10px;
+    transform: translateZ(0) scale(0.8);
+    transform-origin: 100% 0;
+  }
+
+  [data-continue-part="label"] {
+    height: 59px;
+    padding: 5px 14px;
+  }
+
+  /* A one-line title takes its own direction (a Latin title in Arabic keeps its start and ends with the ellipsis)
+     and stays aligned with the card. */
+  [data-continue-part="title"] {
+    display: block;
+    overflow: hidden;
+    font-size: 24px;
+    line-height: 26px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    unicode-bidi: plaintext;
+    text-align: left;
+  }
+
+  [data-continue-part="episode"] {
+    margin-top: 2px;
+    font-size: 20px;
+    line-height: 20px;
+  }
+}
+
+[dir="rtl"] .side .sideTrack[data-enabled="true"] [data-continue-part="title"] {
+  text-align: right;
+}
+
+/* ---------- Apps band and inputs block ---------- */
+.apps {
+  flex: 0 0 1046px;
+  min-width: 0;
+
+  /* The band's window ends at x 1133, before the inputs block, with room for the focus ring. The apps keep 2.7.0's
+     sizes, so the next one shows in part there: it fades out over the last 96px. */
+  > [data-horizontal-scroller][data-enabled="true"] {
+    margin-right: -23px;
+    padding-right: 23px;
+    mask-image: linear-gradient(90deg, #000 calc(100% - 96px), transparent);
+  }
+
+  [dir="rtl"] & > [data-horizontal-scroller][data-enabled="true"] {
+    margin-right: calc(-1 * var(--home-side-padding));
+    margin-left: -23px;
+    padding-right: var(--home-side-padding);
+    padding-left: 23px;
+    mask-image: linear-gradient(270deg, #000 calc(100% - 96px), transparent);
+  }
+}
+
+/* No inputs: the band runs to the screen edge. */
+.layout[data-inputs="false"] .apps {
+  flex: 1 1 auto;
+
+  > [data-horizontal-scroller][data-enabled="true"] {
+    margin-right: calc(-1 * var(--home-side-padding));
+    margin-left: calc(-1 * var(--home-side-padding));
+    padding-right: var(--home-side-padding);
+    padding-left: var(--home-side-padding);
+  }
+}
+
+.inputs {
+  flex: 0 0 684px;
+  margin-left: auto;
+
+  [dir="rtl"] & {
+    margin-right: auto;
+    margin-left: 0;
+  }
+}
+
+/* No apps: the inputs take the band's place. */
+.layout[data-apps="false"] .inputs {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+/* 1–4 inputs: 2x2 cards of 330x88. 5–6: 2x3 cards of 330x56, name only. */
+.inputGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 330px);
+  grid-auto-rows: 88px;
+  gap: 14px 24px;
+
+  &[data-many="true"] {
+    grid-auto-rows: 56px;
+    gap: 11px 24px;
+  }
+}
+
+.inputs .inputGrid > [data-input-card] {
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  height: 100%;
+  padding: 0 22px;
+  text-align: start;
+}
+
+.inputs .inputGrid [data-input-card] [data-input-part="icon"] {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+
+  > svg {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+  }
+}
+
+.inputs .inputGrid [data-input-card] [data-input-part="label"] {
+  flex: 0 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+[dir="rtl"] .inputs .inputGrid [data-input-card] [data-input-part="status"] {
+  right: auto;
+  left: 12px;
+}
+
+.inputs .inputGrid[data-many="true"] > [data-input-card] {
+  gap: 12px;
+  padding: 0 16px;
+
+  [data-input-part="status"],
+  [data-input-part="subtitle"] {
+    display: none;
+  }
+
+  [data-input-part="label"] {
+    font-size: 22px;
+  }
+}
+
+.inputs .inputGrid[data-many="true"] [data-input-card] [data-input-part="icon"] {
+  flex-basis: 40px;
+  width: 40px;
+  height: 40px;
+
+  > svg {
+    flex-basis: 30px;
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* ---------- The apps take the App size, and the top takes the room they leave with the compact clock: two rows of
+   side cards, each a picture, its 5px progress and its label: 318x243 (Very small), 260x210 (Small), 240x192
+   (Medium), 215x176 (Large). ---------- */
+.layout[data-columns="6"][data-apps="true"] .top {
+  height: calc(2 * 243px + 20px);
+}
+
+.layout[data-columns="5"][data-apps="true"] .top {
+  height: calc(2 * 210px + 20px);
+}
+
+.layout[data-columns="4"][data-apps="true"] .top {
+  height: calc(2 * 192px + 20px);
+}
+
+.layout[data-columns="3"][data-apps="true"] .top {
+  height: calc(2 * 176px + 20px);
+}
+
+.layout[data-columns="6"][data-apps="true"] .side .sideTrack[data-enabled="true"] {
+  grid-template-rows: 243px 243px;
+  grid-auto-columns: 318px;
+}
+
+.layout[data-columns="6"][data-apps="true"] .side .sideTrack[data-enabled="true"] > [data-key] {
+  width: 318px;
+  height: 243px;
+}
+
+.layout[data-columns="6"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="artwork"] {
+  width: 318px;
+  height: 179px;
+}
+
+.layout[data-columns="5"][data-apps="true"] .side .sideTrack[data-enabled="true"] {
+  grid-template-rows: 210px 210px;
+  grid-auto-columns: 260px;
+}
+
+.layout[data-columns="5"][data-apps="true"] .side .sideTrack[data-enabled="true"] > [data-key] {
+  width: 260px;
+  height: 210px;
+}
+
+.layout[data-columns="5"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="artwork"] {
+  width: 260px;
+  height: 146px;
+}
+
+.layout[data-columns="4"][data-apps="true"] .side .sideTrack[data-enabled="true"] {
+  grid-template-rows: 192px 192px;
+  grid-auto-columns: 240px;
+}
+
+.layout[data-columns="4"][data-apps="true"] .side .sideTrack[data-enabled="true"] > [data-key] {
+  width: 240px;
+  height: 192px;
+}
+
+.layout[data-columns="4"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="artwork"] {
+  width: 240px;
+  height: 135px;
+}
+
+.layout[data-columns="4"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="label"] {
+  height: 52px;
+  padding: 4px 12px;
+}
+
+.layout[data-columns="4"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="title"] {
+  font-size: 20px;
+  line-height: 22px;
+}
+
+.layout[data-columns="4"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="episode"] {
+  font-size: 17px;
+  line-height: 18px;
+}
+
+.layout[data-columns="3"][data-apps="true"] .side .sideTrack[data-enabled="true"] {
+  grid-template-rows: 176px 176px;
+  grid-auto-columns: 215px;
+}
+
+.layout[data-columns="3"][data-apps="true"] .side .sideTrack[data-enabled="true"] > [data-key] {
+  width: 215px;
+  height: 176px;
+}
+
+.layout[data-columns="3"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="artwork"] {
+  width: 215px;
+  height: 121px;
+}
+
+.layout[data-columns="3"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="label"] {
+  height: 50px;
+  padding: 4px 12px;
+}
+
+.layout[data-columns="3"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="title"] {
+  font-size: 19px;
+  line-height: 21px;
+}
+
+.layout[data-columns="3"][data-apps="true"] .side .sideTrack[data-enabled="true"] [data-continue-part="episode"] {
+  font-size: 16px;
+  line-height: 17px;
+}
