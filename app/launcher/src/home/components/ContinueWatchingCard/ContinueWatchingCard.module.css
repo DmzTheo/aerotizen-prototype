@@ -1,0 +1,374 @@
+.card {
+  position: relative;
+  flex: 0 0 414px;
+  width: 414px;
+  border-radius: var(--continue-card-radius, 10px);
+  overflow: hidden;
+  cursor: pointer;
+  transform: translateZ(0) scale(0.98);
+  transform-origin: center;
+  transition: transform var(--motion-duration-continue-focus) cubic-bezier(0.2, 0.72, 0.25, 1);
+  background: var(--continue-surface);
+  box-shadow: var(--continue-shadow);
+
+  &[data-focused="true"] {
+    transform: translate3d(0, -4px, 0) scale(1.035);
+    box-shadow: var(--continue-focus-shadow);
+    z-index: 2;
+
+    .label {
+      background: var(--continue-focus-label-surface, var(--continue-label-surface));
+    }
+
+    .title {
+      color: var(--continue-focus-title-text, var(--continue-title-text, inherit));
+    }
+
+    .episode {
+      color: var(--continue-focus-episode-text, var(--continue-episode-text));
+    }
+  }
+
+  /* Shapes for the layouts that show programmes otherwise than in the Continue Watching row. Text laid on a picture
+     stays light in every theme. */
+
+  /* A hero: the picture fills the card under a shade that keeps the text readable, the title and its details at the
+     bottom on the start side; the layout adds its own parts (a kicker, a button). The ring comes without zoom. */
+  &[data-variant="hero"] {
+    --hero-shade-angle: 90deg;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    flex: none;
+    width: 100%;
+    height: 100%;
+    padding: 0 0 40px 48px;
+    color: var(--picture-text, #fff);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    transform: none;
+
+    &[data-focused="true"] {
+      transform: none;
+      box-shadow: var(--continue-focus-shadow-top, var(--continue-focus-shadow));
+    }
+
+    [dir="rtl"] & {
+      --hero-shade-angle: 270deg;
+
+      padding: 0 48px 40px 0;
+    }
+
+    .artwork {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: auto;
+      height: auto;
+    }
+
+    .artwork::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background:
+        linear-gradient(var(--hero-shade-angle), rgba(0, 0, 0, 0.74) 0%, rgba(0, 0, 0, 0.4) 42%, rgba(0, 0, 0, 0) 72%),
+        linear-gradient(0deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0) 50%);
+    }
+
+    .artwork::after {
+      display: none;
+    }
+
+    .image {
+      object-fit: cover;
+      object-position: 50% 0;
+    }
+
+    .sourceBadge {
+      top: 18px;
+      right: 18px;
+    }
+
+    .label {
+      position: relative;
+      order: 2;
+      display: block;
+      width: 640px;
+      height: auto;
+      margin-top: 10px;
+      padding: 0;
+      background: none;
+    }
+
+    .title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      max-height: none;
+      white-space: normal;
+      color: var(--picture-text, #fff);
+      font-size: 44px;
+      font-weight: 600;
+      line-height: 1.15;
+    }
+
+    .episode {
+      margin-top: 8px;
+      color: var(--picture-subtitle-text, #d5deec);
+      font-size: 26px;
+      line-height: 1.2;
+    }
+
+    .progress {
+      position: relative;
+      order: 3;
+      width: 380px;
+      height: 5px;
+      margin-top: 16px;
+      overflow: hidden;
+      border-radius: 3px;
+    }
+
+    .progress[data-empty="true"] {
+      visibility: hidden;
+    }
+  }
+
+  /* A small card beside a hero: its sizes come from the layout, the title on one line. */
+  &[data-variant="side"] {
+    flex: none;
+    width: var(--side-card-width, 330px);
+    height: var(--side-card-height, 250px);
+
+    .artwork {
+      width: var(--side-card-width, 330px);
+      height: var(--side-card-artwork, 186px);
+    }
+
+    .sourceBadge {
+      top: 10px;
+      right: 10px;
+      transform: translateZ(0) scale(0.8);
+      transform-origin: 100% 0;
+    }
+
+    .label {
+      height: var(--side-card-label, 59px);
+      padding: var(--side-card-label-padding, 5px 14px);
+    }
+
+    /* A one-line title takes its own direction (a Latin title in Arabic keeps its start and ends with the ellipsis)
+       and stays aligned with the card. */
+    .title {
+      display: block;
+      overflow: hidden;
+      font-size: var(--side-card-title, 24px);
+      line-height: var(--side-card-title-line, 26px);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      unicode-bidi: plaintext;
+      text-align: left;
+    }
+
+    .episode {
+      margin-top: 2px;
+      font-size: var(--side-card-episode, 20px);
+      line-height: var(--side-card-episode-line, 20px);
+    }
+
+    [dir="rtl"] & .title {
+      text-align: right;
+    }
+  }
+
+  /* A picture: it fills the card, the progress inside it on a light track, none for a programme not started. */
+  &[data-variant="picture"],
+  &[data-variant="bare"] {
+    .artwork {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: auto;
+      height: auto;
+    }
+
+    .image {
+      object-fit: cover;
+    }
+
+    .progress {
+      position: absolute;
+      bottom: 8px;
+      overflow: hidden;
+      border-radius: 3px;
+      background: var(--picture-progress-track, rgba(255, 255, 255, 0.3));
+    }
+
+    .progress[data-empty="true"] {
+      visibility: hidden;
+    }
+
+    .progressFill {
+      background: var(--picture-progress-fill, var(--focus));
+    }
+  }
+
+  /* The title over the picture, on a shade; a theme's play mark moves to the top corner, away from the title. */
+  &[data-variant="picture"] {
+    .artwork::after {
+      top: 16px;
+      bottom: auto;
+    }
+
+    .label {
+      position: absolute;
+      right: 0;
+      bottom: 5px;
+      left: 0;
+      height: auto;
+      padding: 40px 18px 14px;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+      color: var(--picture-text, #fff);
+    }
+
+    .title {
+      display: block;
+      overflow: hidden;
+      color: var(--picture-text, #fff);
+      font-size: 24px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .episode {
+      color: var(--picture-subtitle-text, #d5deec);
+    }
+
+    .progress {
+      right: 18px;
+      left: 18px;
+    }
+  }
+
+  /* The picture alone: a caption elsewhere names the programme. */
+  &[data-variant="bare"] {
+    .label {
+      display: none;
+    }
+
+    .progress {
+      right: 20px;
+      left: 20px;
+    }
+  }
+}
+
+.artwork {
+  position: relative;
+  width: 414px;
+  height: 233px;
+  background: var(--continue-artwork-surface);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 2;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--continue-artwork-mark, none);
+    box-shadow: var(--continue-artwork-mark-shadow, none);
+    pointer-events: none;
+  }
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  &[data-fit="cover"] {
+    object-fit: cover;
+  }
+}
+
+.sourceBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  border-radius: var(--continue-badge-radius, 7px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--app-placeholder-surface);
+  box-shadow: var(--continue-badge-shadow);
+  transform: translateZ(0);
+  transition: transform var(--motion-duration-focus) ease-out;
+  pointer-events: none;
+}
+
+.label {
+  display: flex;
+  align-items: flex-start;
+  height: 80px;
+  padding: 10px 16px;
+  background: var(--continue-label-surface);
+}
+
+.details {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 26px;
+  font-weight: var(--continue-title-weight, 500);
+  color: var(--continue-title-text, inherit);
+  line-height: 1.15;
+  max-height: 60px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+
+  &[data-single-line="true"] {
+    display: block;
+  }
+}
+
+.episode {
+  margin-top: 4px;
+  font-size: 22px;
+  line-height: 26px;
+  color: var(--continue-episode-text);
+}
+
+.progress {
+  height: 5px;
+  background: var(--continue-progress-track);
+
+  &[data-empty="true"] {
+    background: var(--continue-label-surface);
+  }
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--focus);
+}

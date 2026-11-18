@@ -1,0 +1,170 @@
+/* The Diptych Home layout. Two columns at the bottom of the height left under the header: text (x 64–600) then
+   pictures (from x 640 to the screen edge). Top row: the caption and what to resume (640x360 pictures); bottom row: the
+   inputs and the apps. */
+.layout {
+  display: grid;
+  grid-template-columns: 536px minmax(0, 1fr);
+  grid-template-rows: 1fr auto auto;
+  grid-column-gap: 40px;
+  grid-row-gap: 48px;
+  height: 100%;
+  /* Clear of the bottom fade, with room for the focused card to grow without scrolling the page. */
+  padding-bottom: calc(var(--home-bottom-fade) + 24px);
+
+  /* A custom clock comes down into the text column. Over the caption and the inputs, it would make the rows taller
+     than the screen: each column then stacks its blocks on its own, at the bottom, and the clock keeps the top. */
+  &[data-clock="page"] {
+    grid-template-rows: 1fr;
+  }
+}
+
+/* The text column and the picture column lay their blocks on the layout's rows: the caption lines up with what to
+   resume, the inputs with the apps. */
+.text {
+  display: contents;
+
+  .layout[data-clock="page"] & {
+    display: flex;
+    flex-direction: column;
+    grid-row: 1;
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  .layout[data-clock="page"] & > * {
+    align-self: stretch;
+  }
+
+  /* The row gap, as margins: Chromium 63 lacks the flex gap. */
+  .layout[data-clock="page"] & > * + * {
+    margin-top: 48px;
+  }
+}
+
+.pictures {
+  display: contents;
+
+  .layout[data-clock="page"] & {
+    display: flex;
+    flex-direction: column;
+    grid-row: 1;
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .layout[data-clock="page"] & > * {
+    align-self: stretch;
+  }
+
+  /* Down to the bottom while they fit; past that they overflow downward (flex-end would push them up, out of reach). */
+  .layout[data-clock="page"] & > :first-child {
+    margin-top: auto;
+  }
+
+  .layout[data-clock="page"] & > * + * {
+    margin-top: 48px;
+  }
+}
+
+.clock {
+  .layout[data-clock="page"] & {
+    margin-bottom: auto;
+  }
+}
+
+/* What is in focus (FocusCaption), against the bottom of the top row */
+.caption {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+}
+
+/* What to resume, without labels (the caption names it), then the apps. Both rows start at the column and run off
+   the screen edge; their window opens 40px earlier and fades in over that gap, so the focused card's glow (and a card
+   scrolled past) fades out instead of being cut along a line. */
+.programmes {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  min-width: 0;
+
+  > [data-horizontal-scroller][data-enabled="true"] {
+    margin-left: -40px;
+    padding-left: 40px;
+    mask-image: linear-gradient(90deg, transparent 0, #000 40px);
+  }
+
+  [dir="rtl"] & > [data-horizontal-scroller][data-enabled="true"] {
+    margin-right: -40px;
+    margin-left: calc(-1 * var(--home-side-padding));
+    padding-right: 40px;
+    padding-left: var(--home-side-padding);
+    mask-image: linear-gradient(270deg, transparent 0, #000 40px);
+  }
+}
+
+.programmeTrack {
+  &[data-enabled="true"] {
+    grid-gap: 28px;
+  }
+
+  > [data-key] {
+    flex: none;
+    width: 640px;
+    max-width: none;
+    height: 360px;
+  }
+}
+
+.apps {
+  grid-column: 2;
+  grid-row: 3;
+  align-self: end;
+  min-width: 0;
+
+  > [data-horizontal-scroller][data-enabled="true"] {
+    margin-left: -40px;
+    padding-left: 40px;
+    mask-image: linear-gradient(90deg, transparent 0, #000 40px);
+  }
+
+  [dir="rtl"] & > [data-horizontal-scroller][data-enabled="true"] {
+    margin-right: -40px;
+    margin-left: calc(-1 * var(--home-side-padding));
+    padding-right: 40px;
+    padding-left: var(--home-side-padding);
+    mask-image: linear-gradient(270deg, transparent 0, #000 40px);
+  }
+
+  /* Without inputs, the apps take the whole width, their window at the screen edges like the Grid's own rows. */
+  .layout[data-inputs="false"] & {
+    grid-column: 1 / -1;
+  }
+
+  .layout[data-inputs="false"] & > [data-horizontal-scroller][data-enabled="true"] {
+    margin-right: calc(-1 * var(--home-side-padding));
+    margin-left: calc(-1 * var(--home-side-padding));
+    padding-right: var(--home-side-padding);
+    padding-left: var(--home-side-padding);
+    mask-image: none;
+  }
+}
+
+/* Inputs: 2x2 under the caption (2x3, name only, with five or six) */
+.inputs {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: end;
+}
+
+.inputGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 80px;
+  grid-gap: 16px 24px;
+
+  &[data-many="true"] {
+    grid-auto-rows: 60px;
+    grid-gap: 12px 24px;
+  }
+}

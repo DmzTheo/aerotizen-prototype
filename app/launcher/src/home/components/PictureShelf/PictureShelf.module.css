@@ -1,0 +1,25 @@
+/* The programmes of the Quay and Moment layouts, 400x225 pictures with their title over them, 28px apart, two at a
+   time: the window holds 828px. */
+.shelf {
+  min-width: 0;
+  max-width: 828px;
+
+  /* Room around the window for the focused card's ring and glow */
+  > [data-horizontal-scroller][data-enabled="true"] {
+    margin: -32px -24px;
+    padding: 32px 24px;
+  }
+}
+
+.track {
+  &[data-enabled="true"] {
+    grid-gap: 28px;
+  }
+
+  > [data-key] {
+    flex: none;
+    width: 400px;
+    max-width: none;
+    height: 225px;
+  }
+}
