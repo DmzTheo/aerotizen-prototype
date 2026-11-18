@@ -1,0 +1,40 @@
+.indicator {
+  z-index: 1;
+  position: absolute;
+  top: var(--selection-offset, 12px);
+  right: var(--selection-offset, 12px);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--selection-surface);
+  color: var(--selection-text);
+
+  > svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  [dir="rtl"] & {
+    right: auto;
+    left: var(--selection-offset, 12px);
+  }
+}
+
+.small {
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+
+  > svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  [dir="rtl"] & {
+    left: 10px;
+  }
+}

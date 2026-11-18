@@ -30,7 +30,13 @@
   fit();
 
   /* ---------- The setup in the URL: #key=value&demo.key=value ---------- */
-  const DEMO_DEFAULTS = { continueItems: 5, hdmiPorts: 3, tvLanguage: "en-GB" };
+  /* devices: null keeps the browser preview's devices (a console on HDMI 1, a known PC switched off on HDMI 3). */
+  const DEMO_DEFAULTS = {
+    continueItems: 7,
+    hdmiPorts: 3,
+    devices: null,
+    tvLanguage: "en-GB",
+  };
   const readHash = () => {
     const out = { settings: {}, demo: Object.assign({}, DEMO_DEFAULTS) };
     location.hash
@@ -181,7 +187,9 @@
       tvLanguageNote: "Used by “{auto}” and for the date format, as on a TV.",
       programmes: "Programmes in “{cw}”",
       hdmi: "HDMI ports on the TV",
-      hdmiNote: "HDMI 4 is simulated: an empty port, like HDMI 2.",
+      devices: "Devices switched on",
+      devicesNote:
+        "For a Home without inputs: no device here, then in Settings → Inputs hide the disconnected ports and Live TV.",
       keys: "Click the TV, then use <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> like the remote, <kbd>Enter</kbd> for OK, <kbd>Esc</kbd> or <kbd>Backspace</kbd> for Back.",
     },
     fr: {
@@ -194,7 +202,9 @@
         "Utilisée par « {auto} » et pour le format de la date, comme sur une TV.",
       programmes: "Programmes dans « {cw} »",
       hdmi: "Ports HDMI de la TV",
-      hdmiNote: "HDMI 4 est simulé : un port vide, comme HDMI 2.",
+      devices: "Appareils allumés",
+      devicesNote:
+        "Pour un accueil sans entrées : aucun appareil ici, puis dans Paramètres → Entrées, masquez les ports déconnectés et la TV en direct.",
       keys: "Cliquez sur la TV, puis utilisez <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> comme la télécommande, <kbd>Entrée</kbd> pour OK, <kbd>Échap</kbd> ou <kbd>Retour arrière</kbd> pour Retour.",
     },
     ru: {
@@ -207,7 +217,9 @@
         "Используется вариантом «{auto}» и для формата даты, как на телевизоре.",
       programmes: "Программы в разделе «{cw}»",
       hdmi: "Порты HDMI телевизора",
-      hdmiNote: "HDMI 4 имитируется: пустой порт, как HDMI 2.",
+      devices: "Включённые устройства",
+      devicesNote:
+        "Чтобы на главном экране не было входов: ни одного устройства здесь, затем в настройках входов скройте отключённые порты и эфирное ТВ.",
       keys: "Нажмите на телевизор и используйте <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> как пульт, <kbd>Enter</kbd> — OK, <kbd>Esc</kbd> или <kbd>Backspace</kbd> — «Назад».",
     },
     ar: {
@@ -218,7 +230,9 @@
       tvLanguageNote: "يستخدمها خيار «{auto}» وتنسيق التاريخ، كما في التلفاز.",
       programmes: "البرامج في «{cw}»",
       hdmi: "منافذ HDMI في التلفاز",
-      hdmiNote: "منفذ HDMI 4 محاكى: منفذ فارغ مثل HDMI 2.",
+      devices: "الأجهزة المشغّلة",
+      devicesNote:
+        "لشاشة رئيسية بلا مداخل: لا جهاز هنا، ثم أخفِ في إعدادات المداخل المنافذ غير المتصلة والبث المباشر.",
       keys: "انقر على التلفاز ثم استخدم <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> مثل جهاز التحكم، و<kbd>Enter</kbd> للتأكيد، و<kbd>Esc</kbd> أو <kbd>Backspace</kbd> للرجوع.",
     },
     it: {
@@ -231,7 +245,9 @@
         "Usata da «{auto}» e per il formato della data, come su una TV.",
       programmes: "Programmi in «{cw}»",
       hdmi: "Porte HDMI della TV",
-      hdmiNote: "HDMI 4 è simulata: una porta vuota, come HDMI 2.",
+      devices: "Dispositivi accesi",
+      devicesNote:
+        "Per una Home senza ingressi: nessun dispositivo qui, poi in Impostazioni → Ingressi nascondi le porte scollegate e la TV in diretta.",
       keys: "Fai clic sulla TV, poi usa <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> come il telecomando, <kbd>Invio</kbd> per OK, <kbd>Esc</kbd> o <kbd>Backspace</kbd> per Indietro.",
     },
   };
@@ -248,7 +264,7 @@
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/"/g, "&quot;");
-  const VERSION = "2.7.0";
+  const VERSION = "main b83428f";
 
   /* ---------- Render the panel from the state ---------- */
   let renderedKey = "";
@@ -288,12 +304,16 @@
         '<label class="ctrl"><span class="ctrl-label">' +
         esc(s.programmes.replace("{cw}", tv.strings.continueWatching)) +
         ' <output id="out-programmes"></output></span>' +
-        '<input type="range" id="in-programmes" min="0" max="5" step="1"></label>' +
+        '<input type="range" id="in-programmes" min="0" max="7" step="1"></label>' +
         '<label class="ctrl"><span class="ctrl-label">' +
         esc(s.hdmi) +
         ' <output id="out-hdmi"></output></span>' +
-        '<input type="range" id="in-hdmi" min="1" max="4" step="1"><p class="note" id="note-hdmi" hidden>' +
-        esc(s.hdmiNote) +
+        '<input type="range" id="in-hdmi" min="1" max="4" step="1"></label>' +
+        '<label class="ctrl"><span class="ctrl-label">' +
+        esc(s.devices) +
+        ' <output id="out-devices"></output></span>' +
+        '<input type="range" id="in-devices" min="0" max="4" step="1"><p class="note">' +
+        esc(s.devicesNote) +
         "</p></label></section>";
       panelFoot.innerHTML =
         "<p>" +
@@ -312,6 +332,15 @@
       );
     const programmes = document.getElementById("in-programmes");
     const hdmi = document.getElementById("in-hdmi");
+    const devices = document.getElementById("in-devices");
+    /* The preview's own devices count as one switched on (the console). */
+    const deviceCount =
+      state.demo.devices === null
+        ? Math.min(1, state.demo.hdmiPorts)
+        : state.demo.devices;
+    devices.max = String(state.demo.hdmiPorts);
+    if (document.activeElement !== devices) devices.value = String(deviceCount);
+    document.getElementById("out-devices").textContent = String(deviceCount);
     if (document.activeElement !== programmes)
       programmes.value = String(state.demo.continueItems);
     if (document.activeElement !== hdmi)
@@ -322,7 +351,6 @@
     document.getElementById("out-hdmi").textContent = String(
       state.demo.hdmiPorts,
     );
-    document.getElementById("note-hdmi").hidden = state.demo.hdmiPorts !== 4;
   }
 
   panelBody.addEventListener("click", (event) => {
@@ -334,8 +362,16 @@
   panelBody.addEventListener("change", (event) => {
     if (event.target.id === "in-programmes")
       setDemo({ continueItems: Number(event.target.value) });
-    if (event.target.id === "in-hdmi")
-      setDemo({ hdmiPorts: Number(event.target.value) });
+    if (event.target.id === "in-hdmi") {
+      const hdmiPorts = Number(event.target.value);
+      const devices =
+        state.demo.devices === null
+          ? null
+          : Math.min(state.demo.devices, hdmiPorts);
+      setDemo({ hdmiPorts, devices });
+    }
+    if (event.target.id === "in-devices")
+      setDemo({ devices: Number(event.target.value) });
   });
   panelBody.addEventListener("input", (event) => {
     if (event.target.id === "in-programmes")
@@ -343,6 +379,8 @@
         event.target.value;
     if (event.target.id === "in-hdmi")
       document.getElementById("out-hdmi").textContent = event.target.value;
+    if (event.target.id === "in-devices")
+      document.getElementById("out-devices").textContent = event.target.value;
   });
 
   /* ---------- Open and close the panel (remembered per viewer) ---------- */

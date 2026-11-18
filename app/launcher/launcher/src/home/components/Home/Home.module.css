@@ -1,0 +1,171 @@
+.home {
+  --home-content-padding: 8px;
+  --home-side-padding: 64px;
+  --home-bottom-fade: 80px;
+  --home-top-fade: 112px;
+
+  height: 1080px;
+  display: flex;
+  flex-direction: column;
+
+  &[data-expanded="true"] {
+    --home-content-padding: 24px;
+  }
+}
+
+.viewport {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0,
+    #000 calc(100% - var(--home-bottom-fade)),
+    rgba(0, 0, 0, 0.9) calc(100% - 60px),
+    rgba(0, 0, 0, 0.5) calc(100% - 32px),
+    rgba(0, 0, 0, 0.1) calc(100% - 10px),
+    transparent 100%
+  );
+}
+
+.mask {
+  width: 100%;
+  height: calc(100% + var(--home-top-fade));
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    rgba(0, 0, 0, 0.06) 16px,
+    rgba(0, 0, 0, 0.22) 36px,
+    rgba(0, 0, 0, 0.5) 60px,
+    rgba(0, 0, 0, 0.78) 84px,
+    rgba(0, 0, 0, 0.94) 100px,
+    #000 112px
+  );
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  transform: translateZ(0) translateY(calc(-1 * var(--home-top-fade)));
+  transition: transform var(--motion-duration-viewport) cubic-bezier(0.2, 0.72, 0.25, 1);
+
+  &[data-scrolled="true"] {
+    transform: translateZ(0) translateY(0);
+  }
+}
+
+/* Counter the mask's movement so content keeps its original position and scroll path. */
+.maskContent {
+  height: calc(100% - var(--home-top-fade));
+  transform: translateY(var(--home-top-fade));
+  transition: transform var(--motion-duration-viewport) cubic-bezier(0.2, 0.72, 0.25, 1);
+
+  &[data-scrolled="true"] {
+    transform: translateY(0);
+  }
+}
+
+.rows {
+  padding: var(--home-content-padding) var(--home-side-padding) 0;
+  will-change: transform;
+  transform: translate3d(0, var(--home-offset), 0);
+  transition: transform var(--motion-duration-viewport) cubic-bezier(0.2, 0.72, 0.25, 1);
+
+  &[data-page="apps"],
+  &[data-docked="true"],
+  &[data-fill="true"] {
+    height: 100%;
+  }
+}
+
+.page {
+  &[data-page="home"] {
+    animation: homeReveal var(--motion-duration-page) ease-out both;
+
+    > :not([hidden]):not(:empty) ~ section:not([hidden]) {
+      margin-top: 40px;
+    }
+  }
+
+  &[data-page="apps"] {
+    animation: appsReveal var(--motion-duration-page) ease-out both;
+  }
+
+  /* A layout that draws the page takes the height left under the header. */
+  &[data-fill="true"] {
+    height: 100%;
+  }
+
+  /* Rows that sit at the bottom of the screen, clear of the bottom fade; taller than the screen, they scroll. */
+  &[data-bottom="true"] {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100%;
+    padding-bottom: calc(var(--home-bottom-fade) + 16px);
+  }
+
+  &[data-docked="true"] {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100%;
+    padding-bottom: calc(var(--home-bottom-fade) + 16px);
+
+    > [data-home-section="inputs"] {
+      grid-row: 3;
+    }
+  }
+}
+
+.empty {
+  font-size: 34px;
+  color: var(--muted);
+  padding: 40px 0;
+}
+
+.backToTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  position: absolute;
+  bottom: calc(var(--home-bottom-fade) - var(--apps-end-offset));
+  left: 50%;
+  transform: translateX(-50%);
+  border: 2px solid var(--back-to-top-border);
+  border-radius: 50%;
+  background: var(--back-to-top-surface);
+  color: var(--fg);
+  cursor: pointer;
+
+  > svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  &[data-focused="true"] {
+    box-shadow: var(--back-to-top-focus-shadow);
+  }
+}
+
+@keyframes homeReveal {
+  from {
+    opacity: 0.7;
+    transform: translate3d(-12px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes appsReveal {
+  from {
+    opacity: 0.7;
+    transform: translate3d(12px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

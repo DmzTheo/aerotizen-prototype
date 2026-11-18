@@ -1,0 +1,56 @@
+/* The hidden attribute must win over component display rules, including SVG status hosts. */
+[hidden] {
+  display: none !important;
+}
+
+/* Page reset and shell visibility. */
+
+body.tv [data-weather-photo] {
+  display: none;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  --launcher-width: 1920px;
+
+  width: var(--launcher-width);
+  height: 1080px;
+  overflow: hidden;
+  font-family: var(--font-ui, "Roboto", "SamsungOne", "Helvetica Neue", Arial, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+h2 {
+  font-size: 39px;
+  font-weight: 500;
+  margin: 0 0 18px;
+}
+
+body.tv {
+  background: transparent;
+}
+body.tv [data-home-content] {
+  visibility: hidden;
+}
+/* Public shell hook: Settings keeps the header dimmed over native TV mode. */
+body.tv [data-home-header] {
+  visibility: hidden;
+}
+body.editing [data-home-header],
+body.editing [data-home-content] {
+  visibility: visible;
+  opacity: 0.48;
+  pointer-events: none;
+}
+body {
+  width: var(--launcher-width);
+  height: 1080px;
+  overflow: hidden;
+  color: var(--fg);
+  font-family: var(--font-ui, "Roboto", "SamsungOne", "Helvetica Neue", Arial, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}

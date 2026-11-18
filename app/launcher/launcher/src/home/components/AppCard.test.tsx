@@ -1,0 +1,168 @@
+import { act, fireEvent, screen } from "@testing-library/preact";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+
+import * as imageSequence from "../../shared/hooks/useImageSequence";
+import { renderWithEnglish as render } from "../../test/renderWithEnglish";
+import { createCardEnvironment } from "../test/createCardEnvironment";
+
+import { AppCard } from "./AppCard";
+
+const app = { id: "demo", name: "Demo app", icon: "/icon.png" };
+const sources = ["/first.png", "/second.png"];
+const artwork = (card: HTMLElement) => card.querySelector<HTMLImageElement>("[data-app-artwork]");
+const fallback = (card: HTMLElement) => card.querySelector<HTMLElement>("[data-app-fallback]");
+
+beforeEach(() => vi.useFakeTimers());
+afterEach(() => vi.useRealTimers());
+
+test("All Apps shows live Home membership without changing the launch action or toggle semantics", () => {
+  const env = createCardEnvironment(`app:${app.id}`);
+  const { rerender } = render(<AppCard env={env} app={app} active onHome={false} />);
+  const card = screen.getByRole("button", { name: app.name });
+  expect(card.querySelector("[data-selection-indicator]")).toBeNull();
+  expect(card.hasAttribute("aria-pressed")).toBe(false);
+  expect(card.hasAttribute("aria-describedby")).toBe(false);
+
+  rerender(<AppCard env={env} app={app} active onHome />);
+  expect(card.querySelector("[data-selection-indicator]")).not.toBeNull();
+  expect(document.getElementById(card.getAttribute("aria-describedby")!)?.textContent).toBe("On Home");
+  fireEvent.click(card);
+  expect(env.activate).toHaveBeenCalledExactlyOnceWith(`app:${app.id}`);
+
+  // The same app on Home has no membership badge or description.
+  rerender(<AppCard env={env} app={app} active />);
+  expect(card.querySelector("[data-selection-indicator]")).toBeNull();
+  expect(card.hasAttribute("aria-describedby")).toBe(false);
+});
+
+test("parent updates retain static artwork while focus and app data still update", async () => {
+  const reads = vi.spyOn(imageSequence, "useImageSequence");
+  try {
+    const env = createCardEnvironment(`app:${app.id}`, { artwork: sources });
+    const { rerender } = render(<AppCard env={env} app={app} active />);
+    const initial = reads.mock.calls.length;
+    rerender(<AppCard env={env} app={app} active />);
+    expect(reads).toHaveBeenCalledTimes(initial);
+    await act(() => env.state.set({ ...env.state.getSnapshot(), selected: "other" }));
+    expect(screen.getByRole("button", { name: app.name }).getAttribute("data-focused")).toBeNull();
+    expect(reads).toHaveBeenCalledTimes(initial);
+    rerender(<AppCard env={env} app={{ ...app, name: "Updated app" }} active />);
+    expect(screen.getByRole("button", { name: "Updated app" })).toBeTruthy();
+    expect(reads.mock.calls.length).toBeGreaterThan(initial);
+  } finally {
+    reads.mockRestore();
+  }
+});
+
+test("successful fallback artwork preserves the card's name, focus and click handler", () => {
+  const env = createCardEnvironment(`app:${app.id}`, { artwork: sources });
+  render(<AppCard env={env} app={app} active />);
+  const card = screen.getByRole("button", { name: app.name });
+
+  fireEvent.error(artwork(card)!);
+  expect(artwork(card)?.getAttribute("src")).toBe(sources[1]);
+  fireEvent.load(artwork(card)!);
+
+  expect(fallback(card)?.hidden).toBe(true);
+  expect(artwork(card)?.hidden).toBe(false);
+  expect(card.getAttribute("data-focused")).toBe("true");
+  fireEvent.click(screen.getByRole("button", { name: app.name }));
+  expect(env.activate).toHaveBeenCalledExactlyOnceWith(`app:${app.id}`);
+  expect(vi.getTimerCount()).toBe(0);
+});
+
+test("keeps the primary artwork when it is already cached before its load handler runs", () => {
+  const complete = vi.spyOn(HTMLImageElement.prototype, "complete", "get").mockReturnValue(true);
+  const width = vi.spyOn(HTMLImageElement.prototype, "naturalWidth", "get").mockReturnValue(304);
+  try {
+    const env = createCardEnvironment(`app:${app.id}`, { artwork: sources });
+    render(<AppCard env={env} app={app} active />);
+    const card = screen.getByRole("button", { name: app.name });
+    expect(artwork(card)?.getAttribute("src")).toBe(sources[0]);
+    expect(artwork(card)?.hidden).toBe(false);
+    expect(fallback(card)?.hidden).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  } finally {
+    complete.mockRestore();
+    width.mockRestore();
+  }
+});
+
+test("package icons keep the app name beneath them without requiring focus", () => {
+  const env = createCardEnvironment("", { artwork: [...sources, app.icon], appIcon: app.icon });
+  render(<AppCard env={env} app={app} active />);
+  const card = screen.getByRole("button", { name: app.name });
+  fireEvent.error(artwork(card)!);
+  fireEvent.error(artwork(card)!);
+  fireEvent.load(artwork(card)!);
+  expect(card.getAttribute("data-focused")).toBeNull();
+  expect(card.querySelector("[data-app-artwork-kind]")?.getAttribute("data-app-artwork-kind")).toBe("icon");
+  expect(artwork(card)?.hidden).toBe(false);
+  expect(fallback(card)?.hidden).toBe(false);
+  expect(fallback(card)?.textContent).toBe(app.name);
+  expect(vi.getTimerCount()).toBe(0);
+});
+
+test("the deadline recognises a completed primary image when its load event was missed", async () => {
+  const complete = vi.spyOn(HTMLImageElement.prototype, "complete", "get").mockReturnValue(false);
+  const width = vi.spyOn(HTMLImageElement.prototype, "naturalWidth", "get").mockReturnValue(304);
+  try {
+    const env = createCardEnvironment(`app:${app.id}`, { artwork: sources });
+    render(<AppCard env={env} app={app} active />);
+    const card = screen.getByRole("button", { name: app.name });
+    expect(artwork(card)?.hidden).toBe(true);
+    complete.mockReturnValue(true);
+    await act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    expect(artwork(card)?.getAttribute("src")).toBe(sources[0]);
+    expect(artwork(card)?.hidden).toBe(false);
+    expect(fallback(card)?.hidden).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  } finally {
+    complete.mockRestore();
+    width.mockRestore();
+  }
+});
+
+test("keeps the app name visible when artwork stalls and the next candidate fails", async () => {
+  const env = createCardEnvironment(`app:${app.id}`, { artwork: sources });
+  render(<AppCard env={env} app={app} active />);
+  const card = screen.getByRole("button", { name: app.name });
+  const stalled = artwork(card)!;
+
+  await act(() => {
+    vi.advanceTimersByTime(2000);
+  });
+  expect(artwork(card)?.getAttribute("src")).toBe(sources[1]);
+  fireEvent.load(stalled);
+  fireEvent.error(artwork(card)!);
+
+  expect(artwork(card)).toBeNull();
+  expect(fallback(card)?.querySelector("svg, img")).toBeNull();
+  expect(screen.getByText(app.name).closest("[data-app-fallback]")?.hasAttribute("hidden")).toBe(false);
+  expect(card.getAttribute("data-focused")).toBe("true");
+  expect(vi.getTimerCount()).toBe(0);
+});
+
+test("defers inactive artwork and keeps an unknown app's label if its own icon fails too", () => {
+  const env = createCardEnvironment("", { artwork: [...sources, app.icon] });
+  const { rerender } = render(<AppCard env={env} app={app} active={false} />);
+  const card = screen.getByRole("button", { name: app.name });
+  expect(card.querySelector("img")).toBeNull();
+  expect(screen.getByText(app.name)).toBeDefined();
+  expect(vi.getTimerCount()).toBe(0);
+  fireEvent.click(card);
+  expect(env.activate).toHaveBeenCalledExactlyOnceWith(`app:${app.id}`);
+
+  rerender(<AppCard env={env} app={app} active />);
+  expect(artwork(card)?.getAttribute("src")).toBe(sources[0]);
+  fireEvent.error(artwork(card)!);
+  fireEvent.error(artwork(card)!);
+  const icon = artwork(card);
+  expect(icon?.getAttribute("src")).toBe(app.icon);
+  fireEvent.error(icon!);
+  expect(card.querySelector("img")).toBeNull();
+  expect(screen.getByText(app.name)).toBeDefined();
+  expect(vi.getTimerCount()).toBe(0);
+});

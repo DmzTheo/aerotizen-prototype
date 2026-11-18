@@ -1,5 +1,5 @@
 // The launcher runs on Samsung's Tizen web runtime (Chromium-based, but older models lag),
-// so legacy scripts retain ES5 syntax and compiled Settings targets Chromium 69.
+// so legacy scripts retain ES5 syntax and the compiled UI targets Chromium 63.
 const js = require("@eslint/js");
 const globals = require("globals");
 const react = require("eslint-plugin-react");
@@ -7,10 +7,12 @@ const reactHooks = require("eslint-plugin-react-hooks");
 const tsParser = require("@typescript-eslint/parser");
 const tsPlugin = require("@typescript-eslint/eslint-plugin");
 const prettier = require("eslint-config-prettier");
+const compat = require("eslint-plugin-compat");
 const simpleImportSort = require("eslint-plugin-simple-import-sort");
 const perfectionist = require("eslint-plugin-perfectionist");
 const translationLint = require("./tools/translation-lint.cjs");
 const unusedImports = require("eslint-plugin-unused-imports");
+const { chromiumMajor } = require("./launcher-browser.json");
 
 module.exports = [
   {
@@ -22,7 +24,6 @@ module.exports = [
       "**/out/**",
       "test-results/**",
       "playwright-report/**",
-      "launcher/js/logos.js",
     ],
   },
   js.configs.recommended,
@@ -34,7 +35,7 @@ module.exports = [
     },
   },
   {
-    files: ["launcher/js/**/*.js", "tests/fixtures/legacy-launcher/js/**/*.js", "tests/fixtures/legacy-dom.js"],
+    files: ["launcher/js/**/*.js"],
     languageOptions: {
       ecmaVersion: 5,
       sourceType: "script",
@@ -149,6 +150,13 @@ module.exports = [
     },
   },
   {
+    files: ["launcher/src/**/*.{ts,tsx}", "launcher/js/**/*.js"],
+    ignores: ["launcher/src/{dev,service,test}/**", "launcher/src/**/*.test.{ts,tsx}"],
+    plugins: { compat },
+    settings: { targets: ["chrome " + chromiumMajor], lintAllEsApis: true },
+    rules: { "compat/compat": "error" },
+  },
+  {
     files: ["launcher/src/**/*.{ts,tsx}", "vite.config.mts", "tools/*.mjs"],
     plugins: { "simple-import-sort": simpleImportSort },
     rules: {
@@ -217,6 +225,41 @@ module.exports = [
     },
   },
   {
+    // Service entries use typed CommonJS boundaries for the older TV runtime.
+    files: ["launcher/src/diagnostics/context.ts"],
+    rules: {
+      "@typescript-eslint/no-require-imports": [
+        "error",
+        { allow: ["^fs$", "^\\./diagnostics$", "^\\.\\./js/build-info$"] },
+      ],
+    },
+  },
+  {
+    files: ["launcher/src/diagnostics/storage.ts"],
+    rules: { "@typescript-eslint/no-require-imports": ["error", { allow: ["^fs$"] }] },
+  },
+  {
+    // Art Mode reports missing TV runtime capabilities without failing to load.
+    files: ["launcher/src/service/createArtMode.ts"],
+    rules: { "@typescript-eslint/no-require-imports": ["error", { allow: ["^http$", "^crypto$"] }] },
+  },
+  {
+    // Preserve optional service diagnostics loads at the CommonJS entry boundary.
+    files: ["launcher/src/service/index.ts"],
+    rules: {
+      "@typescript-eslint/no-require-imports": [
+        "error",
+        {
+          allow: [
+            "^http$",
+            "^url$",
+            "^\\./(artmode|home-mode|home-store|diagnostics|diagnostics-context|diagnostics-store)$",
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ["launcher/service/**/*.js"],
     languageOptions: {
       ecmaVersion: 2018,
@@ -226,12 +269,7 @@ module.exports = [
   },
   prettier,
   {
-    files: [
-      "launcher/js/**/*.js",
-      "tests/fixtures/legacy-launcher/js/**/*.js",
-      "launcher/src/**/*.{ts,tsx}",
-      "vite.config.mts",
-    ],
+    files: ["launcher/js/**/*.js", "launcher/src/**/*.{ts,tsx}", "vite.config.mts"],
     // Keep required braces. The "all" option is compatible with Prettier.
     rules: { curly: ["error", "all"] },
   },

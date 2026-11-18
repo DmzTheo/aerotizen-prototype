@@ -1,0 +1,48 @@
+import type { InputOption } from "../../contracts/launcher";
+import type { LauncherRuntime } from "../../platform/tizen/launcherRuntime";
+import { createStore } from "../../shared/state/createStore";
+import { snapshotList } from "../../shared/state/snapshotList";
+import type { SettingsInventory, SettingsInventorySnapshot } from "../types";
+
+// Runtime callbacks publish data. Rendering reads cached immutable snapshots only.
+export const createSettingsInventory = (
+  runtime: Pick<LauncherRuntime, "apps" | "inputs" | "continueWatching">,
+): SettingsInventory => {
+  const read = (previous?: SettingsInventorySnapshot): SettingsInventorySnapshot => {
+    const apps = runtime.apps.getSnapshot().all;
+    const inputs = snapshotList<InputOption>(
+      runtime.inputs
+        .getSnapshot()
+        .sources.filter((source) => source.type !== "TV")
+        .map((source) => ({
+          port: runtime.inputs.portName(source),
+          placeholder: source.editName,
+        })),
+      previous?.inputs,
+    );
+    const continueSnapshot = runtime.continueWatching?.getSnapshot();
+    const continueSources = continueSnapshot?.sources || previous?.continueSources || Object.freeze([]);
+    const continueMessage = continueSnapshot?.messageKey || "";
+    return previous &&
+      continueSources === previous.continueSources &&
+      continueMessage === previous.continueMessage &&
+      apps === previous.apps &&
+      inputs === previous.inputs
+      ? previous
+      : Object.freeze({ apps, inputs, continueSources, continueMessage });
+  };
+  const store = createStore(read());
+  const refresh = () => store.set(read(store.getSnapshot()));
+  const unsubscribeApps = runtime.apps.subscribe(refresh);
+  const unsubscribeInputs = runtime.inputs.subscribe(refresh);
+  const unsubscribeContinue = runtime.continueWatching?.subscribe(refresh);
+  return {
+    getSnapshot: store.getSnapshot,
+    subscribe: store.subscribe,
+    dispose() {
+      unsubscribeApps();
+      unsubscribeInputs();
+      unsubscribeContinue?.();
+    },
+  };
+};

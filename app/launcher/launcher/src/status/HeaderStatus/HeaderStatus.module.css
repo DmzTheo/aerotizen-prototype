@@ -1,0 +1,13 @@
+.status {
+  color: var(--fg);
+  text-shadow: var(--header-status-shadow, none);
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: flex-end;
+  align-items: center;
+
+  > :not([hidden]) ~ :not([hidden]) {
+    -webkit-margin-start: 28px;
+  }
+}
