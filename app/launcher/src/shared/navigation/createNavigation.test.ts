@@ -6,7 +6,10 @@ import { createNavigation } from "./createNavigation";
 const place = (node: HTMLElement, top: number, left = 0, height = 60) => {
   Object.defineProperty(node, "offsetParent", { configurable: true, get: () => node.parentElement });
   Object.defineProperty(node, "offsetHeight", { configurable: true, get: () => height });
-  node.getBoundingClientRect = () => ({ top, left, bottom: top + height, right: left + 100 }) as DOMRect;
+  Object.defineProperty(node, "getBoundingClientRect", {
+    configurable: true,
+    value: () => ({ top, left, bottom: top + height, right: left + 100 }) as DOMRect,
+  });
   return node;
 };
 
