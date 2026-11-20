@@ -18,6 +18,10 @@ export const BillboardLayout = ({ env, ids, apps, items, inputs, settings, activ
   const { t } = useTranslation();
   const [hero, ...side] = items;
   const manyInputs = inputs.length > 4;
+  // Tiles share the apps' height when up to four inputs sit beside apps from Small up; otherwise rows or pills.
+  const tallInputs = ids.length > 0 && settings.homeCardColumns < 6 && !manyInputs;
+  const slimVariant = manyInputs ? "pill" : "row";
+  const inputVariant = tallInputs ? "tile" : slimVariant;
   return (
     <div
       class={styles.layout}
@@ -87,7 +91,7 @@ export const BillboardLayout = ({ env, ids, apps, items, inputs, settings, activ
                   env={env}
                   source={source}
                   compact={false}
-                  variant={manyInputs ? "pill" : "row"}
+                  variant={inputVariant}
                 />
               ))}
             </div>

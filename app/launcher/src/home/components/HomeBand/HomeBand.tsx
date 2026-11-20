@@ -1,6 +1,7 @@
 import type { InputSource, InstalledApp } from "../../../contracts/launcher";
 import type { SettingsSnapshot } from "../../../contracts/preferences";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
+import { bandAppsWidth } from "../../presentation/bandApps";
 import type { HomeEnvironment } from "../../types";
 import { AppGrid } from "../AppGrid/AppGrid";
 import { InputCard } from "../InputCard/InputCard";
@@ -26,13 +27,18 @@ export const HomeBand = ({
   active: boolean;
 }) => {
   const { t } = useTranslation();
-  // Rows under 130px (Very small, or no apps beside them) hold slim pills.
-  const pills = settings.homeCardColumns === 6 || !ids.length;
+  // Rows under 130px (Small and below, or no apps beside them) hold slim pills.
+  const pills = settings.homeCardColumns >= 6 || !ids.length;
   if (!ids.length && !inputs.length) {
     return null;
   }
   return (
-    <div class={styles.band} data-columns={settings.homeCardColumns} data-apps={ids.length ? "true" : "false"}>
+    <div
+      class={styles.band}
+      data-columns={settings.homeCardColumns}
+      data-apps={ids.length ? "true" : "false"}
+      style={{ "--band-apps-width": bandAppsWidth(settings.homeCardColumns, ids.length, inputs.length) + "px" }}
+    >
       {ids.length ? (
         <section class={styles.apps} data-home-section="apps" data-layout-block="apps">
           <AppGrid

@@ -104,6 +104,8 @@
   "appearance.medium": "Средний",
   "appearance.large": "Большой",
   "appearance.verySmall": "Очень маленький",
+  "appearance.tiny": "Крошечный",
+  "appearance.veryLarge": "Очень большой",
   "clock.compact": "Компактные",
   "clock.vertical": "Крупные вертикальные",
   "clock.horizontal": "Горизонтальные",

@@ -30,15 +30,17 @@
   }
 }
 
-/* The apps: one row, its window cut at the band's edges, the focused card's glow free above and below (80px: the
-   widest theme glow, Frost's, reaches 76px past the card). */
+/* The apps: one row of whole cards (as many as the band holds beside its inputs), the others scrolling in. The window
+   leaves 23px on each side for the focus ring, less than the 24px gap, so no neighbour shows; the focused card's glow
+   stays free above and below (80px: the widest theme glow, Frost's, reaches 76px past the card). */
 .apps {
   flex: 0 1 auto;
   min-width: 0;
+  max-width: var(--band-apps-width, none);
 
   > [data-horizontal-scroller][data-enabled="true"] {
-    margin: -80px calc(-1 * var(--band-padding));
-    padding: 80px var(--band-padding);
+    margin: -80px -23px;
+    padding: 80px 23px;
   }
 }
 

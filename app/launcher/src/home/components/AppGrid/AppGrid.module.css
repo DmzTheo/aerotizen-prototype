@@ -1,9 +1,11 @@
 .grid {
-  --app-card-very-small: 265px;
-  --app-card-small: 332px;
-  --app-card-medium: 368px;
-  --app-card-large: 400px;
-  --app-card-size: var(--app-card-small);
+  --app-card-tiny: 184px;
+  --app-card-very-small: 225px;
+  --app-card-small: 265px;
+  --app-card-medium: 332px;
+  --app-card-large: 368px;
+  --app-card-very-large: 400px;
+  --app-card-size: var(--app-card-medium);
   --app-columns: 5;
   --app-column-gap: 32px;
 
@@ -19,22 +21,32 @@
   }
 
   &[data-columns="3"] {
-    --app-card-size: var(--app-card-large);
+    --app-card-size: var(--app-card-very-large);
     --app-columns: 3;
   }
 
   &[data-columns="4"] {
-    --app-card-size: var(--app-card-medium);
+    --app-card-size: var(--app-card-large);
     --app-columns: 4;
   }
 
   &[data-columns="6"] {
-    --app-card-size: var(--app-card-very-small);
+    --app-card-size: var(--app-card-small);
     --app-columns: 6;
   }
 
   &[data-columns="7"] {
+    --app-card-size: var(--app-card-very-small);
     --app-columns: 7;
+  }
+
+  &[data-columns="8"] {
+    --app-card-size: var(--app-card-tiny);
+    --app-columns: 8;
+  }
+
+  &[data-columns="9"] {
+    --app-columns: 9;
   }
 
   /* The App size alone sets the cards' size, in every layout and with every clock; a layout that no longer fits

@@ -33,8 +33,9 @@ const LAYOUT_OPTIONS = HOME_LAYOUT_OPTIONS.map((option) =>
   PROPOSED_LAYOUTS.includes(option.value) ? { ...option, badgeKey: "proposal.new" as const } : option,
 );
 
+const PROPOSED_SIZES: readonly string[] = ["6", "7", "8"];
 const SIZE_OPTIONS = APP_CARD_SIZE_OPTIONS.map((option) =>
-  option.value === "6" ? { ...option, badgeKey: "proposal.new" as const } : option,
+  PROPOSED_SIZES.includes(option.value) ? { ...option, badgeKey: "proposal.new" as const } : option,
 );
 
 export const AppearanceSettings = ({

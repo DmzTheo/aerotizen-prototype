@@ -12,9 +12,9 @@
   padding-bottom: calc(var(--home-bottom-fade) + 16px);
 }
 
-/* Two rows of side cards: 520px without apps; with apps, the room the App size leaves with the compact clock (each
-   card a picture, its 5px progress and its label): 318x243 (Very small), 260x210 (Small), 240x192 (Medium), 215x176
-   (Large). */
+/* Two rows of side cards: 520px without apps or with the Very small and Tiny apps; with larger apps, the room the App
+   size leaves with the compact clock (each card a picture, its 5px progress and its label): 318x243 (Small), 260x210
+   (Medium), 240x192 (Large), 215x176 (Very large). */
 .top {
   display: flex;
   flex: none;
@@ -238,8 +238,10 @@
   }
 }
 
-/* The inputs block; without apps, it takes the band's place. */
+/* The inputs block; without apps, it takes the band's place. Its cards share the apps' height. */
 .inputs {
+  display: flex;
+  flex-direction: column;
   flex: 0 0 684px;
   margin-left: auto;
 
@@ -254,15 +256,16 @@
   }
 }
 
-/* 1–4 inputs: 2x2 cards of 330x88. 5–6: 2x3 cards of 330x56, name only. */
+/* 1–4 inputs: 2x2 cards 330px wide, 5–6: 2x3, their rows sharing the apps' height (88px and 56px at least). */
 .inputGrid {
   display: grid;
+  flex: 1 1 auto;
   grid-template-columns: repeat(2, 330px);
-  grid-auto-rows: 88px;
+  grid-auto-rows: minmax(88px, 1fr);
   grid-gap: 14px 24px;
 
   &[data-many="true"] {
-    grid-auto-rows: 56px;
+    grid-auto-rows: minmax(56px, 1fr);
     grid-gap: 11px 24px;
   }
 }

@@ -104,6 +104,8 @@
   "appearance.medium": "Médio",
   "appearance.large": "Grande",
   "appearance.verySmall": "Muito pequeno",
+  "appearance.tiny": "Minúsculo",
+  "appearance.veryLarge": "Muito grande",
   "clock.compact": "Compacto",
   "clock.vertical": "Vertical grande",
   "clock.horizontal": "Horizontal",

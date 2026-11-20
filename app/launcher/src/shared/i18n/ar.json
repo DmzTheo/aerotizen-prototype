@@ -104,6 +104,8 @@
   "appearance.medium": "متوسط",
   "appearance.large": "كبير",
   "appearance.verySmall": "صغير جدًا",
+  "appearance.tiny": "صغير للغاية",
+  "appearance.veryLarge": "كبير جدًا",
   "clock.compact": "مضغوط",
   "clock.vertical": "عمودي كبير",
   "clock.horizontal": "أفقي",
