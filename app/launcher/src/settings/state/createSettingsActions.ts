@@ -1,6 +1,7 @@
 import { colourToChannels, normalizeColour } from "../../backgrounds/colours";
 import { normalizeGradient } from "../../backgrounds/gradients";
 import type { SettingsStore, SettingsValues } from "../../contracts/preferences";
+import { DEFAULT_SETTINGS } from "../../services/preferences/defaults";
 import type { MutableStore } from "../../shared/state/createStore";
 import { PRESETS } from "../../themes/presets";
 import type { SettingsActions, SettingsServices, ViewState } from "../types";
@@ -96,7 +97,8 @@ export const createSettingsActions = (
           theme: preset.theme,
           background: preset.background,
           weatherPhoto: false,
-          homeAppLayout: preset.homeAppLayout,
+          homeLayout: preset.homeLayout,
+          ...(preset.homeAppLayout ? { homeAppLayout: preset.homeAppLayout } : {}),
           ...clock,
         },
         () => {
@@ -109,6 +111,8 @@ export const createSettingsActions = (
     setPerformanceMode: (performanceMode) => commit({ performanceMode }, services.applyBackground),
     setWeatherPhoto: (weatherPhoto) => commit({ weatherPhoto }, services.applyBackground),
     setContinueWatching: (continueWatching) => commit({ continueWatching }),
+    setContinueWatchingCoverArt: (continueWatchingCoverArt) => commit({ continueWatchingCoverArt }),
+    setContinueWatchingHeadingVisible: (showContinueWatchingHeading) => commit({ showContinueWatchingHeading }),
     toggleContinueApp(id) {
       const selected = settings.getSnapshot().continueWatchingApps;
       commit({
@@ -125,17 +129,26 @@ export const createSettingsActions = (
         services.applyClock,
       ),
     setDateFormat: (dateFormat) => commit({ dateFormat }, services.applyClock),
+    setDateVisible(showDate) {
+      const { dateFormat } = settings.getSnapshot();
+      commit(
+        { showDate, dateFormat: showDate && dateFormat === "none" ? DEFAULT_SETTINGS.dateFormat : dateFormat },
+        services.applyClock,
+      );
+    },
     setNumerals: (numerals) => commit({ numerals }, services.applyClock),
     setNetworkVisible: (showNetwork) => commit({ showNetwork }),
+    setInputsHeadingVisible: (showInputsHeading) => commit({ showInputsHeading }),
     setLiveTvVisible: (showLiveTv) => commit({ showLiveTv }),
     setHomeCardColumns: (homeCardColumns) => commit({ homeCardColumns }, services.applyCardSize),
     setHomeAppLayout: (homeAppLayout) => commit({ homeAppLayout }, services.applyCardSize),
+    setHomeLayout: (homeLayout) => commit({ homeLayout }, services.applyCardSize),
     setHdmiVisibility: (hideDisconnectedHdmi) => commit({ hideDisconnectedHdmi }),
-    setHdmiNativeViewer: (hdmiNativeViewer) => commit({ hdmiNativeViewer }),
     setHdmiKeepVisible: (port, keep) =>
       commit({ hdmiKeepVisible: { ...settings.getSnapshot().hdmiKeepVisible, [port]: keep } }),
     setTimeFormat: (format) =>
       commit(format === "none" ? { showTime: false } : { showTime: true, timeFormat: format }, services.applyClock),
+    setTimeVisible: (showTime) => commit({ showTime }, services.applyClock),
     setTimeZone: (timeZone) => commit({ timeZone }, services.applyClock),
     setLocation: (weatherLocation) => commit({ weatherLocation }),
     setSpeed(direction) {

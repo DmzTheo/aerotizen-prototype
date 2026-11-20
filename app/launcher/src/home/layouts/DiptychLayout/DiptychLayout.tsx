@@ -1,36 +1,18 @@
-import type { ContinueItem, InputSource, InstalledApp } from "../../../contracts/launcher";
-import type { SettingsSnapshot } from "../../../contracts/preferences";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
+import { AppGrid } from "../../components/AppGrid/AppGrid";
+import { ContinueScroller } from "../../components/ContinueScroller";
+import { FocusCaption } from "../../components/FocusCaption/FocusCaption";
+import { InputCard } from "../../components/InputCard/InputCard";
+import { PageClock } from "../../components/PageClock/PageClock";
 import { clockPlace } from "../../presentation/clockPlace";
-import type { HomeEnvironment } from "../../types";
-import { AppGrid } from "../AppGrid/AppGrid";
-import { ContinueScroller } from "../ContinueScroller";
-import { FocusCaption } from "../FocusCaption/FocusCaption";
-import { InputCard } from "../InputCard/InputCard";
-import { PageClock } from "../PageClock/PageClock";
+import type { HomeLayoutPageProps } from "../types";
 
 import styles from "./DiptychLayout.module.css";
 
 // The Diptych Home layout. A column of text on the left names what is
 // in focus, in the theme's display font; pictures only on the right (what to resume, then the apps), running off the
 // edge; the inputs close the text column. A custom clock comes down into the page, at the top of the text column.
-export const DiptychLayout = ({
-  env,
-  ids,
-  apps,
-  items,
-  inputs,
-  settings,
-  active,
-}: {
-  env: HomeEnvironment;
-  ids: readonly string[];
-  apps: readonly InstalledApp[];
-  items: readonly ContinueItem[];
-  inputs: readonly InputSource[];
-  settings: SettingsSnapshot;
-  active: boolean;
-}) => {
+export const DiptychLayout = ({ env, ids, apps, items, inputs, settings, active }: HomeLayoutPageProps) => {
   const { t } = useTranslation();
   const manyInputs = inputs.length > 4;
   const clockInPage = clockPlace(settings, "home") === "page";
@@ -72,7 +54,13 @@ export const DiptychLayout = ({
       <div class={styles.pictures}>
         {items.length ? (
           <div class={styles.programmes} data-layout-block="continue">
-            <ContinueScroller env={env} items={items} trackClass={styles.programmeTrack} variant="bare" />
+            <ContinueScroller
+              coverArt={settings.continueWatchingCoverArt}
+              env={env}
+              items={items}
+              trackClass={styles.programmeTrack}
+              variant="bare"
+            />
           </div>
         ) : null}
         {ids.length ? (

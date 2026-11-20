@@ -1,6 +1,7 @@
 import type { InstalledApp } from "../../../contracts/launcher";
 import type { SettingsSnapshot } from "../../../contracts/preferences";
 import { getAppGridColumns } from "../../../shared/apps/appCardSizes";
+import { homeAppGridLayout, usesHomeAppRail } from "../../../shared/homeLayout";
 import { useStoreSelector } from "../../../shared/hooks/useStore";
 import type { HomeEnvironment, Page } from "../../types";
 import { AppCard } from "../AppCard";
@@ -30,7 +31,7 @@ export const AppGrid = ({
   label: string;
 }) => {
   const appOffset = useStoreSelector(env.state, (state) => state.appOffset);
-  const scroll = page === "home" && settings.homeAppLayout !== "grid";
+  const scroll = page === "home" && usesHomeAppRail(settings);
   return (
     <HorizontalScroller
       id={shown ? "grid" : page + "-grid-parked"}
@@ -44,7 +45,7 @@ export const AppGrid = ({
         "data-page": page,
         "data-expanded": settings.clockLayout === "custom" ? "true" : "false",
         "data-scroll": scroll ? "true" : "false",
-        "data-layout": page === "home" ? settings.homeAppLayout : "grid",
+        "data-layout": page === "home" ? homeAppGridLayout(settings) : "grid",
       }}
       trackRef={page === "home" ? env.appItems : undefined}
       viewportRef={page === "home" ? env.appViewport : undefined}

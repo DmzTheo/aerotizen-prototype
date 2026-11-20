@@ -20,7 +20,7 @@ export const HomeHeader = ({ env }: { env: HomeEnvironment }) => {
   const settings = useStore(env.settings);
   const settingsTitle = t(unread ? "settings.about.homeNotice" : "common.settings");
   const place = clockPlace(settings, page);
-  const shortcuts = shortcutsLast(settings.homeAppLayout) ? "last" : "first";
+  const shortcuts = shortcutsLast(settings) ? "last" : "first";
   return (
     <header
       class={styles.header}

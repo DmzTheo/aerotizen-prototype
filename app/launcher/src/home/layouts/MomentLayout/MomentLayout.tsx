@@ -1,12 +1,10 @@
-import type { ContinueItem, InputSource, InstalledApp } from "../../../contracts/launcher";
-import type { SettingsSnapshot } from "../../../contracts/preferences";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
 import { useClock } from "../../../status/hooks/useClock";
 import { useWeather } from "../../../status/hooks/useWeather";
 import { WeatherIcon } from "../../../status/WeatherIcon";
-import type { HomeEnvironment } from "../../types";
-import { HomeBand } from "../HomeBand/HomeBand";
-import { PictureShelf } from "../PictureShelf/PictureShelf";
+import { HomeBand } from "../../components/HomeBand/HomeBand";
+import { PictureShelf } from "../../components/PictureShelf/PictureShelf";
+import type { HomeLayoutPageProps } from "../types";
 
 import styles from "./MomentLayout.module.css";
 
@@ -24,23 +22,7 @@ const greetingKey = (hour: number) => {
 // page: the date, a greeting for the hour, the time and the weather on the start side; on the end side what to resume,
 // or the weather on a glass card when there is nothing to resume. The apps and the inputs sit in the glass band below.
 // The clock settings choose what shows (time, date format, weather, place), not its layout.
-export const MomentLayout = ({
-  env,
-  ids,
-  apps,
-  items,
-  inputs,
-  settings,
-  active,
-}: {
-  env: HomeEnvironment;
-  ids: readonly string[];
-  apps: readonly InstalledApp[];
-  items: readonly ContinueItem[];
-  inputs: readonly InputSource[];
-  settings: SettingsSnapshot;
-  active: boolean;
-}) => {
+export const MomentLayout = ({ env, ids, apps, items, inputs, settings, active }: HomeLayoutPageProps) => {
   const { t } = useTranslation();
   const clock = useClock(env.status.time, env.runtime.clock, settings);
   const weather = useWeather(env.status.weather);
@@ -48,7 +30,7 @@ export const MomentLayout = ({
   const weatherCard = weatherShown && !items.length;
   const weatherLine = weatherShown && !weatherCard;
   return (
-    <div class={styles.layout}>
+    <div class={styles.layout} data-columns={settings.homeCardColumns}>
       <div class={styles.top}>
         <div class={styles.greeting}>
           <div class={styles.date} hidden={settings.dateFormat === "none"}>
@@ -67,7 +49,9 @@ export const MomentLayout = ({
             </div>
           ) : null}
         </div>
-        {items.length ? <PictureShelf env={env} items={items} className={styles.shelf} /> : null}
+        {items.length ? (
+          <PictureShelf coverArt={settings.continueWatchingCoverArt} env={env} items={items} className={styles.shelf} />
+        ) : null}
         {weatherCard ? (
           <div class={styles.card}>
             <span class={styles.cardIcon}>

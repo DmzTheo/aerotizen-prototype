@@ -1,8 +1,14 @@
 /* The programmes of the Quay and Moment layouts, 400x225 pictures with their title over them, 28px apart, two at a
-   time: the window holds 828px. */
+   time: the window holds 828px. With cover art, three posters at a time, as tall as the layout allows. */
 .shelf {
+  --shelf-poster-width: calc(var(--shelf-poster-height, 330px) * 2 / 3);
+
   min-width: 0;
   max-width: 828px;
+
+  &[data-cover-art="true"] {
+    max-width: calc(3 * var(--shelf-poster-width) + 2 * 28px);
+  }
 
   /* Room around the window for the focused card's ring and glow */
   > [data-horizontal-scroller][data-enabled="true"] {
@@ -21,5 +27,10 @@
     width: 400px;
     max-width: none;
     height: 225px;
+  }
+
+  &[data-cover-art="true"] > [data-key] {
+    width: var(--shelf-poster-width);
+    height: var(--shelf-poster-height, 330px);
   }
 }

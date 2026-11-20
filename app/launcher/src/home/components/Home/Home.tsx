@@ -1,35 +1,27 @@
 import { ArrowUp } from "lucide-preact";
 import { useLayoutEffect } from "preact/hooks";
 
+import { getHomeLayout, usesHomeAppRail } from "../../../shared/homeLayout";
 import { useStore, useStoreSelector } from "../../../shared/hooks/useStore";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
 import { Icon } from "../../../shared/icons/Icon/Icon";
+import { getHomeLayoutView } from "../../layouts/homeLayoutViews";
 import type { HomeEnvironment } from "../../types";
 import { AppActionsMenu } from "../AppActionsMenu/AppActionsMenu";
 import { AppGrid } from "../AppGrid/AppGrid";
-import { BillboardLayout } from "../BillboardLayout/BillboardLayout";
 import { ContinueWatchingRow } from "../ContinueWatchingRow/ContinueWatchingRow";
-import { DiptychLayout } from "../DiptychLayout/DiptychLayout";
 import { HomeControl } from "../HomeControl/HomeControl";
 import { HomeHeader } from "../HomeHeader/HomeHeader";
-import { HomeSectionHeading } from "../HomeSectionHeading/HomeSectionHeading";
 import { InputDock } from "../InputDock/InputDock";
-import { MomentLayout } from "../MomentLayout/MomentLayout";
-import { QuayLayout } from "../QuayLayout/QuayLayout";
 
 import styles from "./Home.module.css";
 
-// The layouts that draw the whole Home page themselves.
-const OWN_LAYOUTS = {
-  moment: MomentLayout,
-  diptych: DiptychLayout,
-  billboard: BillboardLayout,
-  quay: QuayLayout,
-} as const;
-const ownLayout = (layout: string) =>
-  layout in OWN_LAYOUTS ? OWN_LAYOUTS[layout as keyof typeof OWN_LAYOUTS] : undefined;
+interface Props {
+  env: HomeEnvironment;
+  onBackdropVisibilityChange(visible: boolean): void;
+}
 
-export const Home = ({ env }: { env: HomeEnvironment }) => {
+export const Home = ({ env, onBackdropVisibilityChange }: Props) => {
   const { t } = useTranslation();
   const settings = useStore(env.settings);
   const page = useStoreSelector(env.state, (state) => state.page);
@@ -38,30 +30,35 @@ export const Home = ({ env }: { env: HomeEnvironment }) => {
   const draft = useStoreSelector(env.state, (state) => state.draft);
   const scroll = useStoreSelector(env.state, (state) => state.scroll);
   const { apps, inputs, items, ready } = useStore(env.inventory);
+  const definition = getHomeLayout(settings.homeLayout);
+  const { Page, ProgrammeFeature, Sections, rootClass, showProgrammeDetails } = getHomeLayoutView(settings.homeLayout);
+  const onHome = page === "home";
+  const scrollMode = onHome ? definition.scroll : "offset";
   const home = draft || (settings.homeInitialized ? settings.home : [env.runtime.config.FIREPLACE_ID]);
   const visibleHome = home.filter(
     (id) => id === env.runtime.config.FIREPLACE_ID || !ready || apps.some((app) => app.id === id),
   );
-  const showContinueWatching = page === "home" && settings.continueWatching && items.length > 0;
-  const Layout = ownLayout(settings.homeAppLayout);
-  const loungeLayout = settings.homeAppLayout === "lounge";
-  const standardLayout = !Layout && !loungeLayout;
-  const fills = Boolean(Layout) && page === "home";
-  // Without programmes, the Lounge's rows sit at the bottom of the screen, under the wallpaper.
-  const loungeDocked = loungeLayout && page === "home" && !showContinueWatching;
+  const showContinueWatching = onHome && settings.continueWatching && items.length > 0;
   const dockInputs =
-    standardLayout &&
-    page === "home" &&
+    onHome &&
+    definition.dockInputsWhenSpaceAllows &&
     inputs.length > 0 &&
     !showContinueWatching &&
     visibleHome.length > 0 &&
-    (settings.homeAppLayout === "scroll" || visibleHome.length <= settings.homeCardColumns);
+    (usesHomeAppRail(settings) || visibleHome.length <= settings.homeCardColumns);
+  const fills = Boolean(Page) && onHome;
+  const bottomDocked = definition.bottomAligned && !Page && onHome && !showContinueWatching;
   const atAppsEnd = page === "apps" && scroll === appsEndOffset;
   useLayoutEffect(() => {
+    const viewport = env.viewport.current;
+    if (scrollMode === "offset" && viewport?.scrollTop) {
+      viewport.scrollTop = 0;
+    }
     env.bridge.focus();
   }, [
     env,
     page,
+    scrollMode,
     apps,
     inputs,
     items,
@@ -71,15 +68,66 @@ export const Home = ({ env }: { env: HomeEnvironment }) => {
     draft,
     settings.homeCardColumns,
     settings.homeAppLayout,
+    settings.homeLayout,
+    settings.continueWatching,
+    settings.continueWatchingCoverArt,
     settings.clockLayout,
     settings.aeroClockStyle,
   ]);
+  const homeSections = {
+    apps: {
+      visible: onHome && visibleHome.length > 0,
+      content: (
+        <AppGrid
+          key="apps"
+          env={env}
+          ids={visibleHome}
+          apps={apps}
+          settings={settings}
+          page="home"
+          shown={onHome}
+          active={active}
+          label={t("home.homeApps")}
+        />
+      ),
+    },
+    continueWatching: {
+      visible: showContinueWatching,
+      content: (
+        <ContinueWatchingRow
+          key="continueWatching"
+          env={env}
+          items={items}
+          coverArt={settings.continueWatchingCoverArt}
+          showDetails={showProgrammeDetails}
+          showHeading={settings.showContinueWatchingHeading}
+          visible={showContinueWatching}
+        />
+      ),
+    },
+    inputs: {
+      visible: onHome && inputs.length > 0,
+      content: (
+        <InputDock key="inputs" env={env} inputs={inputs} visible={onHome} showHeading={settings.showInputsHeading} />
+      ),
+    },
+  };
   return (
-    <div class={styles.home} data-home data-expanded={settings.clockLayout === "custom" ? "true" : "false"}>
+    <div
+      class={onHome && rootClass ? styles.home + " " + rootClass : styles.home}
+      data-home
+      data-layout={settings.homeLayout}
+      data-scroll-mode={scrollMode}
+      data-expanded={settings.clockLayout === "custom" ? "true" : "false"}
+    >
+      {ProgrammeFeature && showContinueWatching && (
+        <ProgrammeFeature env={env} items={items} onBackdropVisibilityChange={onBackdropVisibilityChange} />
+      )}
       <HomeHeader env={env} />
       <div
         class={styles.viewport}
         data-home-viewport
+        ref={env.viewport}
         data-scrolled={scroll > 0 ? "true" : "false"}
         data-at-apps-end={atAppsEnd ? "true" : "false"}
         aria-hidden={!active}
@@ -96,7 +144,7 @@ export const Home = ({ env }: { env: HomeEnvironment }) => {
               data-home-content
               data-page={page}
               data-docked={dockInputs ? "true" : "false"}
-              data-fill={fills || loungeDocked ? "true" : "false"}
+              data-fill={fills || bottomDocked ? "true" : "false"}
               ref={env.rows}
               style={{ "--home-offset": -scroll + "px", "--apps-end-offset": appsEndOffset + "px" }}
             >
@@ -106,11 +154,11 @@ export const Home = ({ env }: { env: HomeEnvironment }) => {
                 data-page={page}
                 data-docked={dockInputs ? "true" : "false"}
                 data-fill={fills ? "true" : "false"}
-                data-bottom={loungeDocked ? "true" : "false"}
-                data-home-layout={settings.homeAppLayout}
+                data-bottom={bottomDocked ? "true" : "false"}
+                data-home-layout={settings.homeLayout}
               >
-                {Layout && page === "home" ? (
-                  <Layout
+                {Page && onHome ? (
+                  <Page
                     env={env}
                     ids={visibleHome}
                     apps={apps}
@@ -119,35 +167,9 @@ export const Home = ({ env }: { env: HomeEnvironment }) => {
                     settings={settings}
                     active={active}
                   />
-                ) : null}
-                {loungeLayout ? <ContinueWatchingRow env={env} items={items} visible={showContinueWatching} /> : null}
-                {loungeLayout ? (
-                  <section data-home-section="apps" hidden={page !== "home" || !visibleHome.length}>
-                    <HomeSectionHeading title={t("settings.apps.title")} />
-                    <AppGrid
-                      env={env}
-                      ids={visibleHome}
-                      apps={apps}
-                      settings={settings}
-                      page="home"
-                      shown={page === "home"}
-                      active={active}
-                      label={t("home.homeApps")}
-                    />
-                  </section>
-                ) : null}
-                {standardLayout ? (
-                  <AppGrid
-                    env={env}
-                    ids={visibleHome}
-                    apps={apps}
-                    settings={settings}
-                    page="home"
-                    shown={page === "home"}
-                    active={active}
-                    label={t("home.homeApps")}
-                  />
-                ) : null}
+                ) : (
+                  <Sections definition={definition} sections={homeSections} />
+                )}
                 <AppGrid
                   env={env}
                   ids={apps.map((app) => app.id)}
@@ -161,8 +183,6 @@ export const Home = ({ env }: { env: HomeEnvironment }) => {
                 <p id="apps-empty" class={styles.empty} hidden={page === "home" || apps.length > 0}>
                   {t("home.emptyApps")}
                 </p>
-                {standardLayout ? <ContinueWatchingRow env={env} items={items} visible={showContinueWatching} /> : null}
-                {!Layout ? <InputDock env={env} inputs={inputs} visible={page === "home"} /> : null}
               </div>
               {page === "apps" && apps.length > 0 && (
                 <HomeControl

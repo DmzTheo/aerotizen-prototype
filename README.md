@@ -6,21 +6,21 @@ A playable version of [AeroTizen](https://github.com/helalaou/AeroTizen) with th
 
 ## What is real, what is new
 
-- **Real:** the TV screen is AeroTizen's main branch at commit `b83428f` (after launcher 3.2.0), built from its source (`app/`) and shown in the app's own browser preview: Home, All apps and Settings, the eight interface themes with their fonts, the wallpapers, the sample apps, Continue Watching and inputs, the translations, the icons and the remote navigation.
+- **Real:** the TV screen is AeroTizen's main branch at commit `59d00af`, with the Cinema layout and the Cover art option that are under review upstream, built from its source (`app/`) and shown in the app's own browser preview: Home, All apps and Settings, the eight interface themes with their fonts, the wallpapers, the sample apps, Continue Watching and inputs, the translations, the icons and the remote navigation.
 - **New (proposals, names not final):**
-  - the Lounge, Moment, Diptych, Billboard and Quay Home layouts (Settings → Appearance → Home app layout). Each one works with Continue Watching on, off or empty, with inputs shown or all hidden, with one app or many, at every app size and with every clock: without programmes the apps and the inputs sit at the bottom of the screen, and without inputs the apps take the whole width;
+  - the Lounge, Moment, Diptych, Billboard and Quay Home layouts (Settings → Appearance → Launcher layout, next to Standard and Cinema). Each one works with Continue Watching on, off or empty, with or without Cover art, with inputs shown or all hidden, with one app or many, at every app size and with every clock: without programmes the apps and the inputs sit at the bottom of the screen, and without inputs the apps take the whole width. With Cover art (Settings → Apps → Continue Watching), each layout shows posters: three at a time beside the greeting or the clock in Moment and Quay, five in the Diptych, a row as tall as the top area beside the Billboard's main picture;
   - a Very small app size, six apps a row in the Grid. The app size set in Settings is the same in every layout and with every clock; a layout that no longer fits scrolls, like the Grid;
   - Themes (Settings → Appearance → Themes, "presets" in the code): one choice sets the interface theme, the wallpaper, the Home layout and the clock together, each shown as a miniature of the Home screen it gives, AeroTizen's own first, then one per proposed layout.
 
   A theme from the Themes section never changes the app size: the rest stays the user's choice.
 
-- **Not reproduced:** Samsung's app artwork (the app's browser preview shows its neutral cards), and anything that needs a TV. The weather is live, as in the app's preview.
+- **Not reproduced:** Samsung's app artwork (the app's browser preview shows its neutral cards), the posters a catalogue returns (the prototype draws its own for the sample programmes), and anything that needs a TV. The weather is live, as in the app's preview.
 
 ## How to use it
 
 Click the TV, then use the arrow keys like the remote, Enter for OK, and Esc or Backspace for Back.
 
-Everything the app lets you change is in its own Settings (the gear at the top left): themes, interface appearance, app size, Home layout, wallpapers, Continue Watching, inputs, clock, language…
+Everything the app lets you change is in its own Settings (the gear at the top left): themes, launcher layout, interface appearance, app size, wallpapers, Continue Watching, inputs, clock, language…
 
 The handle on the right edge opens a small panel that simulates the TV itself:
 
@@ -36,7 +36,7 @@ Serve this folder with any static server (for example `npx serve`) and open the 
 
 ## Rebuild the TV page
 
-`app/` is AeroTizen's main branch at commit `b83428f` (`launcher/`, `package.json` and the build and lint configurations) with the proposals applied: comparing it with that commit shows every change. With the dependencies installed (`npm ci` in `app/`):
+`app/` is AeroTizen's main branch at commit `59d00af` (`launcher/`, `package.json` and the build and lint configurations) with the Cinema layout and Cover art changes under review, then the proposals applied. With the dependencies installed (`npm ci` in `app/`):
 
 ```sh
 cd app

@@ -10,11 +10,13 @@ import { HorizontalScroller } from "./HorizontalScroller/HorizontalScroller";
 // Continue Watching as a sideways row inside a proposed layout, bound to the
 // Home state like the launcher's own row (its refs and its remembered offset). The layout gives the track its look.
 export const ContinueScroller = ({
+  coverArt,
   env,
   items,
   trackClass,
   variant,
 }: {
+  coverArt: boolean;
   env: HomeEnvironment;
   items: readonly ContinueItem[];
   trackClass: string;
@@ -27,13 +29,14 @@ export const ContinueScroller = ({
       id="continue-items"
       label={t("home.continueWatching")}
       trackClass={trackClass}
+      trackData={{ "data-cover-art": coverArt ? "true" : "false" }}
       trackRef={env.continueItems}
       viewportRef={env.continueViewport}
       offset={continueOffset}
       onOffsetChange={(offset) => env.state.set({ ...env.state.getSnapshot(), continueOffset: offset })}
     >
       {items.map((item) => (
-        <ContinueWatchingCard key={item.key} env={env} item={item} variant={variant} />
+        <ContinueWatchingCard key={item.key} env={env} item={item} variant={variant} coverArt={coverArt} />
       ))}
     </HorizontalScroller>
   );

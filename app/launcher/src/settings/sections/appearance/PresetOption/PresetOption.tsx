@@ -1,6 +1,5 @@
 import type { JSX } from "preact";
 
-import type { SettingsValues } from "../../../../contracts/preferences";
 import { SelectionIndicator } from "../../../../shared/components/SelectionIndicator/SelectionIndicator";
 import type { Preset } from "../../../../themes/presets";
 import { SettingsControl } from "../../../components/SettingsControl/SettingsControl";
@@ -71,7 +70,7 @@ const grid = () => (
   </span>
 );
 
-const SKETCHES: Readonly<Record<SettingsValues["homeAppLayout"], () => JSX.Element>> = {
+const SKETCHES: Readonly<Record<string, () => JSX.Element>> = {
   grid,
   scroll: grid,
   billboard: () => (
@@ -172,6 +171,7 @@ const clock = (style: Preset["clock"]) => {
 // theme's variables, the clock in its style and a sketch of the Home layout), with its name below. Only the miniature
 // takes the focus, so the Settings focus ring follows its shape; the button carries the name.
 export const PresetOption = ({ focusKey, label, light, onSelect, preset, preview, selected }: Props) => {
+  const sketch = preset.homeLayout === "standard" ? preset.homeAppLayout || "grid" : preset.homeLayout;
   return (
     <div class={styles.option}>
       <SettingsControl
@@ -186,7 +186,7 @@ export const PresetOption = ({ focusKey, label, light, onSelect, preset, preview
           class={styles.screen}
           data-theme-preview={preset.theme}
           data-clock={preset.clock}
-          data-layout={preset.homeAppLayout}
+          data-layout={sketch}
           data-light={light ? "true" : undefined}
           style={{ background: preview }}
           aria-hidden="true"
@@ -194,7 +194,7 @@ export const PresetOption = ({ focusKey, label, light, onSelect, preset, preview
           <span class={styles.icons}>{shapes(3, styles.icon)}</span>
           <span class={styles.tabs} />
           {clock(preset.clock)}
-          <span class={styles.content}>{SKETCHES[preset.homeAppLayout]()}</span>
+          <span class={styles.content}>{(SKETCHES[sketch] || grid)()}</span>
         </span>
         {selected ? <SelectionIndicator small /> : null}
       </SettingsControl>

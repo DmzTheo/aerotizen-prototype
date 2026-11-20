@@ -114,6 +114,11 @@
     max-width: none;
     height: 360px;
   }
+
+  /* With cover art, posters as tall as the pictures: five at a time instead of two. */
+  &[data-cover-art="true"] > [data-key] {
+    width: 240px;
+  }
 }
 
 .apps {

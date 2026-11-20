@@ -2,8 +2,10 @@
 // to resume. When the shell sets a number of devices, the first ports have a device on (with the preview's name where
 // it has one) and the others are empty; otherwise the ports keep the preview's devices.
 import { launcherRuntime as runtime } from "../app/initializeLauncherRuntime";
-import type { InputSource } from "../contracts/launcher";
+import type { ContinueArtwork, ContinueWatchingSnapshot } from "../contracts/continueWatching";
+import type { ContinueItem, InputSource } from "../contracts/launcher";
 
+import { posterFor } from "./posters";
 import { prototypeState } from "./state";
 
 const { demo } = prototypeState;
@@ -34,9 +36,22 @@ if (platforms && previewInputs) {
   };
 }
 
+const limit = (snapshot: ContinueWatchingSnapshot): ContinueWatchingSnapshot =>
+  Object.freeze({ ...snapshot, items: Object.freeze(snapshot.items.slice(0, demo.continueItems)) });
+
 const service = runtime.continueWatching;
 if (service) {
-  const preview = service.getSnapshot();
-  const snapshot = Object.freeze({ ...preview, items: Object.freeze(preview.items.slice(0, demo.continueItems)) });
-  runtime.continueWatching = { ...service, getSnapshot: () => snapshot };
+  let cache = { source: service.getSnapshot(), limited: limit(service.getSnapshot()) };
+  const getSnapshot = () => {
+    const source = service.getSnapshot();
+    if (source !== cache.source) {
+      cache = { source, limited: limit(source) };
+    }
+    return cache.limited;
+  };
+  const watchPoster = (item: ContinueItem, show: (result: ContinueArtwork) => void) => {
+    show({ status: "ready", url: posterFor(item) });
+    return () => {};
+  };
+  runtime.continueWatching = { ...service, getSnapshot, watchPoster };
 }

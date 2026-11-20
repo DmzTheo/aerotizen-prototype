@@ -7,6 +7,17 @@
   flex-direction: column;
   height: 100%;
   padding-bottom: calc(var(--home-bottom-fade) + 16px);
+
+  /* Poster height beside the band, per App size: the band grows with the apps. */
+  --shelf-poster-height: 360px;
+
+  &[data-columns="4"] {
+    --shelf-poster-height: 330px;
+  }
+
+  &[data-columns="3"] {
+    --shelf-poster-height: 300px;
+  }
 }
 
 /* Takes the free height while the layout fits; past that it overflows downward (flex-end would push it up, out of

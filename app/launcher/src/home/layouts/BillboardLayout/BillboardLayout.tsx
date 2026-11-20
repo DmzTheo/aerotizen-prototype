@@ -1,38 +1,20 @@
 import { Play } from "lucide-preact";
 
-import type { ContinueItem, InputSource, InstalledApp } from "../../../contracts/launcher";
-import type { SettingsSnapshot } from "../../../contracts/preferences";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
 import { Icon } from "../../../shared/icons/Icon/Icon";
-import type { HomeEnvironment } from "../../types";
-import { AppGrid } from "../AppGrid/AppGrid";
-import { ContinueScroller } from "../ContinueScroller";
-import { ContinueWatchingCard } from "../ContinueWatchingCard/ContinueWatchingCard";
-import { FocusCaption } from "../FocusCaption/FocusCaption";
-import { HomeSectionHeading } from "../HomeSectionHeading/HomeSectionHeading";
-import { InputCard } from "../InputCard/InputCard";
+import { AppGrid } from "../../components/AppGrid/AppGrid";
+import { ContinueScroller } from "../../components/ContinueScroller";
+import { ContinueWatchingCard } from "../../components/ContinueWatchingCard/ContinueWatchingCard";
+import { FocusCaption } from "../../components/FocusCaption/FocusCaption";
+import { HomeSectionHeading } from "../../components/HomeSectionHeading/HomeSectionHeading";
+import { InputCard } from "../../components/InputCard/InputCard";
+import type { HomeLayoutPageProps } from "../types";
 
 import styles from "./BillboardLayout.module.css";
 
 // The Billboard Home layout. The first Continue Watching item fills a hero,
 // the others sit in two rows beside it; below, the apps run in one band next to the inputs.
-export const BillboardLayout = ({
-  env,
-  ids,
-  apps,
-  items,
-  inputs,
-  settings,
-  active,
-}: {
-  env: HomeEnvironment;
-  ids: readonly string[];
-  apps: readonly InstalledApp[];
-  items: readonly ContinueItem[];
-  inputs: readonly InputSource[];
-  settings: SettingsSnapshot;
-  active: boolean;
-}) => {
+export const BillboardLayout = ({ env, ids, apps, items, inputs, settings, active }: HomeLayoutPageProps) => {
   const { t } = useTranslation();
   const [hero, ...side] = items;
   const manyInputs = inputs.length > 4;
@@ -69,7 +51,13 @@ export const BillboardLayout = ({
         )}
         {side.length ? (
           <div class={styles.side} data-layout-block="side">
-            <ContinueScroller env={env} items={side} trackClass={styles.sideTrack} variant="side" />
+            <ContinueScroller
+              coverArt={settings.continueWatchingCoverArt}
+              env={env}
+              items={side}
+              trackClass={styles.sideTrack}
+              variant="side"
+            />
           </div>
         ) : null}
       </div>

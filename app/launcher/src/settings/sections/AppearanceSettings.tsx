@@ -1,10 +1,13 @@
 import type { BackgroundOption } from "../../contracts/launcher";
 import { APP_CARD_SIZE_OPTIONS } from "../../shared/apps/appCardSizes";
+import { getHomeLayout, HOME_LAYOUT_OPTIONS } from "../../shared/homeLayout";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { currentPreset, PRESET_IDS, PRESETS } from "../../themes/presets";
 import { ChoiceGroup } from "../components/ChoiceGroup";
 import { ControlGroup } from "../components/ControlGroup/ControlGroup";
+import { SettingsField } from "../components/SettingsField/SettingsField";
 import { SettingsSection } from "../components/SettingsSection/SettingsSection";
+import { SettingsToggle } from "../components/SettingsToggle/SettingsToggle";
 import type { SettingsSectionProps } from "../types";
 
 import { PresetOption } from "./appearance/PresetOption/PresetOption";
@@ -23,31 +26,24 @@ const APPEARANCE_OPTIONS = [
 const HOME_APP_LAYOUT_OPTIONS = [
   { value: "grid", labelKey: "appearance.grid" },
   { value: "scroll", labelKey: "appearance.scroll" },
-  { value: "lounge", labelKey: "appearance.lounge", badgeKey: "proposal.new" },
-  { value: "moment", labelKey: "appearance.moment", badgeKey: "proposal.new" },
-  { value: "diptych", labelKey: "appearance.diptych", badgeKey: "proposal.new" },
-  { value: "billboard", labelKey: "appearance.billboard", badgeKey: "proposal.new" },
-  { value: "quay", labelKey: "appearance.quay", badgeKey: "proposal.new" },
 ] as const;
 
-// The Very small size is new.
+const PROPOSED_LAYOUTS: readonly string[] = ["lounge", "moment", "diptych", "billboard", "quay"];
+const LAYOUT_OPTIONS = HOME_LAYOUT_OPTIONS.map((option) =>
+  PROPOSED_LAYOUTS.includes(option.value) ? { ...option, badgeKey: "proposal.new" as const } : option,
+);
+
 const SIZE_OPTIONS = APP_CARD_SIZE_OPTIONS.map((option) =>
   option.value === "6" ? { ...option, badgeKey: "proposal.new" as const } : option,
 );
 
-const PERFORMANCE_OPTIONS = [
-  { value: false, labelKey: "common.off" },
-  { value: true, labelKey: "common.on" },
-] as const;
-
-// The Themes section shows each preset's wallpaper through its Settings swatch.
 export const AppearanceSettings = ({
   settings,
   actions,
   backgrounds,
 }: SettingsSectionProps & { backgrounds: readonly BackgroundOption[] }) => {
   const { t } = useTranslation();
-  // No preset is selected once one of its settings has been changed.
+  const appArrangement = getHomeLayout(settings.homeLayout).appArrangement;
   const preset = currentPreset(settings);
   return (
     <>
@@ -70,7 +66,16 @@ export const AppearanceSettings = ({
           })}
         </ControlGroup>
       </SettingsSection>
-      <SettingsSection title={t("appearance.title")}>
+      <SettingsField title={t("appearance.launcherLayout")}>
+        <ChoiceGroup
+          id="home-layout"
+          label={t("appearance.launcherLayout")}
+          value={settings.homeLayout}
+          options={LAYOUT_OPTIONS}
+          onSelect={actions.setHomeLayout}
+        />
+      </SettingsField>
+      <SettingsField title={t("appearance.title")} topAligned>
         <ChoiceGroup
           id="settings-appearance"
           label={t("appearance.title")}
@@ -78,8 +83,8 @@ export const AppearanceSettings = ({
           options={APPEARANCE_OPTIONS}
           onSelect={actions.setTheme}
         />
-      </SettingsSection>
-      <SettingsSection title={t("appearance.size")}>
+      </SettingsField>
+      <SettingsField title={t("appearance.size")}>
         <ChoiceGroup
           id="home-card-columns"
           label={t("appearance.size")}
@@ -87,8 +92,8 @@ export const AppearanceSettings = ({
           options={SIZE_OPTIONS}
           onSelect={(value) => actions.setHomeCardColumns(Number(value))}
         />
-      </SettingsSection>
-      <SettingsSection title={t("appearance.homeLayout")}>
+      </SettingsField>
+      <SettingsField title={t("appearance.homeLayout")} hidden={appArrangement !== "preference"}>
         <ChoiceGroup
           id="home-app-layout"
           label={t("appearance.homeLayout")}
@@ -96,16 +101,15 @@ export const AppearanceSettings = ({
           options={HOME_APP_LAYOUT_OPTIONS}
           onSelect={actions.setHomeAppLayout}
         />
-      </SettingsSection>
-      <SettingsSection title={t("appearance.performanceMode")} description={t("appearance.performanceHint")}>
-        <ChoiceGroup
-          id="performance-mode"
+      </SettingsField>
+      <SettingsField title={t("appearance.performanceMode")} description={t("appearance.performanceHint")}>
+        <SettingsToggle
+          focusKey="performance-mode"
           label={t("appearance.performanceMode")}
-          value={settings.performanceMode}
-          options={PERFORMANCE_OPTIONS}
-          onSelect={actions.setPerformanceMode}
+          checked={settings.performanceMode}
+          onChange={actions.setPerformanceMode}
         />
-      </SettingsSection>
+      </SettingsField>
     </>
   );
 };

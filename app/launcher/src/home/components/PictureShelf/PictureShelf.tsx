@@ -7,15 +7,17 @@ import styles from "./PictureShelf.module.css";
 // What to resume in the Quay and Moment layouts: pictures with their
 // title over them, two at a time in a window that scrolls. The layout places the shelf.
 export const PictureShelf = ({
+  coverArt,
   env,
   items,
   className,
 }: {
+  coverArt: boolean;
   env: HomeEnvironment;
   items: readonly ContinueItem[];
   className: string;
 }) => (
-  <div class={styles.shelf + " " + className} data-layout-block="continue">
-    <ContinueScroller env={env} items={items} trackClass={styles.track} variant="picture" />
+  <div class={styles.shelf + " " + className} data-layout-block="continue" data-cover-art={coverArt ? "true" : "false"}>
+    <ContinueScroller coverArt={coverArt} env={env} items={items} trackClass={styles.track} variant="picture" />
   </div>
 );

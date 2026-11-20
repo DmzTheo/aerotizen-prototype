@@ -1,23 +1,14 @@
 import type { SettingsSnapshot } from "../../contracts/preferences";
+import { getHomeLayout } from "../../shared/homeLayout";
 import type { Page } from "../types";
 
-type Layout = SettingsSnapshot["homeAppLayout"];
+export const shortcutsLast = (settings: Pick<SettingsSnapshot, "homeLayout">) =>
+  getHomeLayout(settings.homeLayout).header === "clockFirst";
 
-// Where a Home layout puts the clock. Moment shows it in its page, under the
-// greeting. Quay and the Diptych fill the height under the header, so a custom clock, which would make the header too
-// tall for them, moves into their page too, at the top on the start side. Quay's header puts its shortcuts last (and
-// its compact clock first); the others keep the launcher's header.
-const SHORTCUTS_LAST: ReadonlySet<Layout> = new Set<Layout>(["quay"]);
-const CLOCK_IN_PAGE: ReadonlySet<Layout> = new Set<Layout>(["moment"]);
-const CUSTOM_CLOCK_IN_PAGE: ReadonlySet<Layout> = new Set<Layout>(["quay", "diptych"]);
-
-export const shortcutsLast = (layout: Layout) => SHORTCUTS_LAST.has(layout);
-
-export const clockPlace = (settings: Pick<SettingsSnapshot, "homeAppLayout" | "clockLayout">, page: Page) => {
-  const layout = settings.homeAppLayout;
-  const headerPlace = shortcutsLast(layout) ? "first" : "last";
-  const customInPage = settings.clockLayout === "custom" && CUSTOM_CLOCK_IN_PAGE.has(layout);
-  // All apps has no room for it in its page: the clock stays in the header.
-  const inPage = page === "home" && (CLOCK_IN_PAGE.has(layout) || customInPage);
+export const clockPlace = (settings: Pick<SettingsSnapshot, "homeLayout" | "clockLayout">, page: Page) => {
+  const { clock } = getHomeLayout(settings.homeLayout);
+  const headerPlace = shortcutsLast(settings) ? "first" : "last";
+  const inPage =
+    page === "home" && (clock === "page" || (clock === "pageWhenCustom" && settings.clockLayout === "custom"));
   return inPage ? "page" : headerPlace;
 };

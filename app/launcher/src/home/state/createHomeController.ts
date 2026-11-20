@@ -1,4 +1,5 @@
 import { getAppGridColumns } from "../../shared/apps/appCardSizes";
+import { getHomeLayout, usesHomeAppRail } from "../../shared/homeLayout";
 import { createInputScope } from "../../shared/input/createInputScope";
 import { focusControl } from "../../shared/navigation/focusControl";
 import { createStore } from "../../shared/state/createStore";
@@ -10,13 +11,7 @@ import type { Direction } from "./layoutNavigation";
 import { createMoveHistory, nearestLayoutKey } from "./layoutNavigation";
 
 const HEADER_KEYS = ["gear", "samsung-home-shortcut", "home-tab", "apps-tab"] as const;
-// The Quay header puts the clock first and its shortcuts after the tabs, so the arrows run from the tabs to them.
 const CLOCK_FIRST_HEADER_KEYS = ["home-tab", "apps-tab", "gear", "samsung-home-shortcut"] as const;
-// Layouts that place items in bands, where the arrows move to the nearest item.
-const NEAREST_LAYOUTS: readonly string[] = ["moment", "diptych", "billboard", "quay"];
-const PROPOSED_LAYOUTS: readonly string[] = ["lounge", ...NEAREST_LAYOUTS];
-// Layouts that keep the Home apps in rows; the others keep them on one sideways row.
-const ROW_APP_LAYOUTS: readonly string[] = ["grid"];
 // Reserve 16px for the focus outline beyond the 112px top and 80px bottom fades.
 const TOP_SCROLL_CLEARANCE = 128;
 const BOTTOM_SCROLL_CLEARANCE = 96;
@@ -63,7 +58,6 @@ const getScrollOffset = ({
   firstRowRests: boolean;
 }) => {
   const firstRow = rows[0].includes(selected) || rows[1]?.includes(selected);
-  // A first row that does not fit above the bottom fade sits just above it.
   if (firstRow && (firstRowRests || bottom <= limit)) {
     return 0;
   }
@@ -155,6 +149,7 @@ export const createHomeController = (
   let timer: number | undefined;
   let enterDown = false;
   let started = false;
+  let navigated = false;
   const cancelPress = () => {
     if (timer !== undefined) {
       window.clearTimeout(timer);
@@ -180,8 +175,7 @@ export const createHomeController = (
   };
   const ids = () =>
     state.getSnapshot().page === "home" ? homeIds() : inventory.getSnapshot().apps.map((app) => app.id);
-  const layout = () => (state.getSnapshot().page === "home" ? settings.getSnapshot().homeAppLayout : "grid");
-  const scrollApps = () => !ROW_APP_LAYOUTS.includes(layout());
+  const scrollApps = () => state.getSnapshot().page === "home" && usesHomeAppRail(settings.getSnapshot());
   const getScroller = (key: string) => {
     if (key.startsWith("continue:")) {
       return {
@@ -196,41 +190,42 @@ export const createHomeController = (
     return null;
   };
   const sourceKey = (source: { type: string; number?: number }) => "input:" + source.type + ":" + source.number;
-  const headerKeys = () => (settings.getSnapshot().homeAppLayout === "quay" ? CLOCK_FIRST_HEADER_KEYS : HEADER_KEYS);
-  const rows = (): readonly (readonly string[])[] => {
-    const columns = getAppGridColumns(settings.getSnapshot().homeCardColumns, state.getSnapshot().page);
+  const homeDefinition = () => getHomeLayout(settings.getSnapshot().homeLayout);
+  const onHomePage = () => state.getSnapshot().page === "home";
+  const headerKeys = () => (homeDefinition().header === "clockFirst" ? CLOCK_FIRST_HEADER_KEYS : HEADER_KEYS);
+  const rows = () => {
+    const preferences = settings.getSnapshot();
+    const { page } = state.getSnapshot();
+    const columns = getAppGridColumns(preferences.homeCardColumns, page);
     const appKeys = ids().map((id) => "app:" + id);
-    const all = state.getSnapshot().page === "apps" ? [ADD_APPS_KEY, ...appKeys] : appKeys;
+    const all = page === "apps" ? [ADD_APPS_KEY, ...appKeys] : appKeys;
     const rowLength = scrollApps() ? Math.max(1, all.length) : columns;
     const appRows = Array.from({ length: Math.ceil(all.length / rowLength) }, (_, index) =>
       all.slice(index * rowLength, (index + 1) * rowLength),
     );
-    const header = headerKeys();
-    const appLayout = [header, ...appRows];
-    if (state.getSnapshot().page !== "home") {
-      return appKeys.length ? [...appLayout, ["back-to-top"]] : appLayout;
+    const allRows: (readonly string[])[] = [headerKeys()];
+    if (page === "apps") {
+      allRows.push(...appRows);
+      if (appKeys.length) {
+        allRows.push(["back-to-top"]);
+      }
+      return { allRows, scroll: "offset" as const };
     }
     const { items, inputs } = inventory.getSnapshot();
     const continueRows =
-      settings.getSnapshot().continueWatching && items.length ? [items.map((item) => "continue:" + item.key)] : [];
+      preferences.continueWatching && items.length ? [items.map((item) => "continue:" + item.key)] : [];
     const inputRows = inputs.length ? [inputs.map(sourceKey)] : [];
-    // The proposed layouts' rows, top to bottom. The Lounge puts Continue Watching first. The Billboard and the
-    // Diptych show what to resume, then the apps beside the inputs in one band; Quay and Moment start on that band,
-    // their programmes above it.
+    const layout = getHomeLayout(preferences.homeLayout);
     const band = [...(appRows[0] || []), ...(inputRows[0] || [])];
-    const bandRows = band.length ? [band] : [];
-    if (layout() === "lounge") {
-      return [header, ...continueRows, ...appRows, ...inputRows];
+    const sectionRows = layout.appsBesideInputs
+      ? { apps: band.length ? [band] : [], continueWatching: continueRows, inputs: [] }
+      : { apps: appRows, continueWatching: continueRows, inputs: inputRows };
+    for (const section of [...layout.main, ...layout.belowFold]) {
+      allRows.push(...sectionRows[section]);
     }
-    if (layout() === "billboard" || layout() === "diptych") {
-      return [header, ...continueRows, ...bandRows];
-    }
-    if (layout() === "quay" || layout() === "moment") {
-      return [header, ...bandRows, ...continueRows];
-    }
-    return [...appLayout, ...continueRows, ...inputRows];
+    return { allRows, scroll: layout.scroll };
   };
-  const focus = () => {
+  const focus = (withinRow = false) => {
     if (document.hidden || runtime.settingsUi?.isOpen()) {
       update({ active: false });
       return;
@@ -245,9 +240,10 @@ export const createHomeController = (
       update({ menu: null });
       cancelPress();
     }
-    const list = rows();
+    const { allRows: list, scroll: scrollMode } = rows();
     const old = state.getSnapshot().selected;
-    const selected = getSelectedKey(list, old, started);
+    // Allow a higher-priority rail to load after the initial Home render, until the user takes focus.
+    const selected = getSelectedKey(list, old, started && navigated);
     if (list[1]?.length) {
       started = true;
     }
@@ -273,8 +269,21 @@ export const createHomeController = (
       );
       update({ [scroller.offset]: offset });
     }
+    if (scrollMode === "native") {
+      const viewport = env.viewport.current;
+      if (viewport && !withinRow) {
+        const anchor = node.closest("[data-home-scroll-anchor]");
+        // Align the whole rail so focus scaling cannot move its resting position.
+        const offset = anchor
+          ? viewport.scrollTop + anchor.getBoundingClientRect().bottom - viewport.getBoundingClientRect().bottom
+          : 0;
+        viewport.scrollTop = Math.max(0, Math.round(offset));
+      }
+      update({ appsEndOffset: 0, scroll: 0 });
+      return;
+    }
+    const firstRowRests = !(pending.page === "home" && homeDefinition().bottomAligned);
     // Home's header and first row always use the top position. Avoid style/layout reads for each horizontal move.
-    const firstRowRests = !PROPOSED_LAYOUTS.includes(layout());
     if (pending.page === "home" && firstRowRests && (list[0].includes(selected) || list[1]?.includes(selected))) {
       update({ appsEndOffset: 0, scroll: 0 });
       return;
@@ -307,12 +316,13 @@ export const createHomeController = (
     });
     update({ appsEndOffset, scroll });
   };
-  const select = (selected: string) => {
+  const select = (selected: string, withinRow = false) => {
+    navigated = true;
     if (state.getSnapshot().selected !== selected) {
       cancelPress();
     }
     update({ selected });
-    focus();
+    focus(withinRow);
   };
   const endMove = () => {
     const draft = state.getSnapshot().draft;
@@ -327,6 +337,7 @@ export const createHomeController = (
     focus();
   };
   const showPage = (page: Page) => {
+    navigated = true;
     cancelPress();
     endMove();
     update({ page, appsEndOffset: 0, scroll: 0, menu: null, selected: page === "home" ? "home-tab" : "apps-tab" });
@@ -411,7 +422,6 @@ export const createHomeController = (
     [K.UP]: "up",
     [K.DOWN]: "down",
   };
-  // Reversing an Up or Down move in a proposed layout goes back where it came from.
   const moveHistory = createMoveHistory();
   const keydown = (code: number, event: Pick<KeyboardEvent, "preventDefault">) =>
     transaction(() => {
@@ -423,6 +433,7 @@ export const createHomeController = (
         return;
       }
       event.preventDefault();
+      navigated = true;
       if (current.moving) {
         if (code === K.ENTER || code === K.BACK || code === K.ESC) {
           if (code !== K.ENTER || !enterDown) {
@@ -462,17 +473,18 @@ export const createHomeController = (
         }
         return;
       }
-      const all = rows();
+      const { allRows: all } = rows();
       const row = all.findIndex((items) => items.includes(current.selected));
       if (row < 0) {
         focus();
         return;
       }
       const direction = arrowDirections[code];
-      if (NEAREST_LAYOUTS.includes(layout()) && row > 0 && env.rows.current) {
+      const definition = homeDefinition();
+      const inLayout = onHomePage() && row > 0;
+      if (inLayout && definition.navigation === "nearest" && env.rows.current) {
         const replay = moveHistory.replay(current.selected, direction, (key) => nodes.has(key));
         const next = replay?.to || nearestLayoutKey(nodes, env.rows.current, current.selected, direction, rtl);
-        // Up from the top band leaves the layout for the current tab.
         const goal = next || (code === K.UP ? current.page + "-tab" : undefined);
         if (goal) {
           moveHistory.moved(current.selected, goal, direction, replay);
@@ -481,7 +493,7 @@ export const createHomeController = (
         return;
       }
       const horizontal = code === K.LEFT || code === K.RIGHT;
-      const remembers = PROPOSED_LAYOUTS.includes(layout()) && row > 0;
+      const remembers = inLayout && definition.rememberMoves;
       const replay = remembers ? moveHistory.replay(current.selected, direction, (key) => nodes.has(key)) : undefined;
       if (replay) {
         moveHistory.moved(current.selected, replay.to, direction, replay);
@@ -507,7 +519,7 @@ export const createHomeController = (
       if (remembers) {
         moveHistory.moved(current.selected, next, direction);
       }
-      select(next);
+      select(next, horizontal);
     });
   const keyup = (code: number) => {
     if (code !== K.ENTER) {

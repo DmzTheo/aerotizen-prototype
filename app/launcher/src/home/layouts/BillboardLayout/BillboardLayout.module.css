@@ -132,6 +132,7 @@
 .sideTrack {
   --side-card-width: 330px;
   --side-card-height: 250px;
+  --side-poster-height: 520px;
 
   &[data-enabled="true"] {
     grid-template-rows: var(--side-card-height) var(--side-card-height);
@@ -145,19 +146,39 @@
     box-shadow: var(--continue-focus-shadow-top, var(--continue-focus-shadow));
   }
 
+  /* With cover art, one row of posters as tall as the top area, every one of them in the top row. The selector
+     outranks the App size rules below. */
+  .layout[data-columns][data-apps] &[data-cover-art="true"] {
+    --side-card-width: calc(var(--side-poster-height) * 2 / 3);
+    --side-card-height: var(--side-poster-height);
+    --side-card-artwork: var(--side-poster-height);
+  }
+
+  &[data-cover-art="true"][data-enabled="true"] {
+    grid-template-rows: var(--side-card-height);
+  }
+
+  &[data-cover-art="true"] > [data-focused="true"] {
+    transform: translate3d(0, 2.75%, 0) scale(1.035);
+    box-shadow: var(--continue-focus-shadow-top, var(--continue-focus-shadow));
+  }
+
   .layout[data-columns="6"][data-apps="true"] & {
+    --side-poster-height: 506px;
     --side-card-width: 318px;
     --side-card-height: 243px;
     --side-card-artwork: 179px;
   }
 
   .layout[data-columns="5"][data-apps="true"] & {
+    --side-poster-height: 440px;
     --side-card-width: 260px;
     --side-card-height: 210px;
     --side-card-artwork: 146px;
   }
 
   .layout[data-columns="4"][data-apps="true"] & {
+    --side-poster-height: 404px;
     --side-card-width: 240px;
     --side-card-height: 192px;
     --side-card-artwork: 135px;
@@ -170,6 +191,7 @@
   }
 
   .layout[data-columns="3"][data-apps="true"] & {
+    --side-poster-height: 372px;
     --side-card-width: 215px;
     --side-card-height: 176px;
     --side-card-artwork: 121px;

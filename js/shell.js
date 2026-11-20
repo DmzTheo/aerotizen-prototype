@@ -264,7 +264,7 @@
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/"/g, "&quot;");
-  const VERSION = "main b83428f";
+  const VERSION = "main 59d00af";
 
   /* ---------- Render the panel from the state ---------- */
   let renderedKey = "";
